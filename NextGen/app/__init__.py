@@ -1,6 +1,7 @@
 from flask import Flask
 import psycopg2
 import psycopg2.extras
+import os
 from app.config import Config
 
 
@@ -11,20 +12,30 @@ def create_app():
     # ---------------------------------------
     # 📌 ALWAYS initialize db attribute
     # ---------------------------------------
-    app.db = None   # 🔑 REQUIRED LINE
+    app.db = None
 
     # ---------------------------------------
-    # 📌 Connect to PostgreSQL
+    # 📌 Connect to PostgreSQL (LOCAL + RENDER)
     # ---------------------------------------
     try:
-        conn = psycopg2.connect(
-            dbname=Config.DB_NAME,
-            user=Config.DB_USER,
-            password=Config.DB_PASSWORD,
-            host=Config.DB_HOST,
-            port=Config.DB_PORT,
-            cursor_factory=psycopg2.extras.RealDictCursor
-        )
+        DATABASE_URL = os.environ.get("DATABASE_URL")
+
+        if DATABASE_URL:
+            conn = psycopg2.connect(
+                DATABASE_URL,
+                cursor_factory=psycopg2.extras.RealDictCursor,
+                sslmode="require"
+            )
+        else:
+            conn = psycopg2.connect(
+                dbname=Config.DB_NAME,
+                user=Config.DB_USER,
+                password=Config.DB_PASSWORD,
+                host=Config.DB_HOST,
+                port=Config.DB_PORT,
+                cursor_factory=psycopg2.extras.RealDictCursor
+            )
+
         app.db = conn
         print("✅ PostgreSQL Database Connected Successfully!")
     except Exception as e:
@@ -37,7 +48,7 @@ def create_app():
     from app.routes.products import products
     from app.routes.auto_order import auto_order_bp
     from app.routes.alerts import alerts_bp
-    from app.routes.analytics import analytics_bp 
+    from app.routes.analytics import analytics_bp
     from app.routes.auth import auth
     from app.routes.recommendations import recommendations_bp
 
