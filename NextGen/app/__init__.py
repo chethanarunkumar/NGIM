@@ -1,7 +1,7 @@
 from flask import Flask
 import psycopg2
 import psycopg2.extras
-from app.config import DB_NAME, DB_USER, DB_PASSWORD, DB_HOST, DB_PORT
+from app.config import Config
 
 
 def create_app():
@@ -13,11 +13,11 @@ def create_app():
     # ---------------------------------------
     try:
         conn = psycopg2.connect(
-            dbname=DB_NAME,
-            user=DB_USER,
-            password=DB_PASSWORD,
-            host=DB_HOST,
-            port=DB_PORT,
+            dbname=Config.DB_NAME,
+            user=Config.DB_USER,
+            password=Config.DB_PASSWORD,
+            host=Config.DB_HOST,
+            port=Config.DB_PORT,
             cursor_factory=psycopg2.extras.RealDictCursor
         )
         app.db = conn
@@ -36,7 +36,6 @@ def create_app():
     from app.routes.auth import auth
     from app.routes.recommendations import recommendations_bp
 
-    
     app.register_blueprint(recommendations_bp)
     app.register_blueprint(auth)
     app.register_blueprint(main)
