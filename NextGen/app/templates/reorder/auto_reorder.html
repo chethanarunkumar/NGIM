@@ -1,0 +1,265 @@
+{% extends "dashboard.html" %}
+{% block content %}
+
+<style>
+
+.page-title {
+    font-size: 32px;
+    font-weight: 700;
+    color: #60a5fa;
+    margin-bottom: 8px;
+}
+
+.subtitle {
+    color: #a5b4fc;
+    font-size: 16px;
+    margin-bottom: 35px;
+}
+
+/* ===================== TOP ROW ===================== */
+.top-row {
+    display: flex;
+    gap: 25px;
+    width: 100%;
+}
+
+.top-card {
+    width: 48%;
+    background: linear-gradient(145deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+    border-radius: 12px;
+    padding: 15px 20px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 0 12px rgba(147, 51, 234, 0.20);
+}
+
+.top-card h2 {
+    font-size: 20px;
+    margin-bottom: 8px;
+}
+
+/* ===================== INPUT ===================== */
+.input {
+    width: 90%;
+    padding: 10px;
+    font-size: 15px;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    margin-top: 8px;
+    background: rgba(255,255,255,0.1);
+}
+
+/* ===================== SWITCH ===================== */
+.switch { position: relative; display: inline-block; width: 50px; height: 26px; }
+.switch input { display: none; }
+
+.slider {
+    position: absolute; cursor: pointer; top:0; left:0; right:0; bottom:0;
+    background:#6b7280; border-radius:34px; transition: .4s;
+}
+.slider:before {
+    content:""; position:absolute; height:20px; width:20px; left:3px; bottom:3px;
+    background:white; border-radius:50%; transition:.4s;
+}
+input:checked + .slider { background:#3b82f6; }
+input:checked + .slider:before { transform:translateX(24px); }
+
+/* ===================== ACTIVITY TABLE ===================== */
+.activity-row {
+    display: grid;
+    grid-template-columns: 12% 12% 20% 26% 15% 15%;
+    padding: 15px 10px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 10px;
+    margin-bottom: 10px;
+    color: #e2e8f0;
+}
+
+.activity-head {
+    background: rgba(255,255,255,0.12);
+    font-weight: 700;
+}
+
+.status {
+    font-weight: 600;
+}
+
+.status.done { color:#4ade80; }
+.status.pending { color:#facc15; }
+
+.report-link {
+    color:#60a5fa;
+    text-decoration: underline;
+    font-size: 14px;
+}
+
+/* ===================== PRODUCT RULES ===================== */
+.full-width-card {
+    width: 100%;
+    margin-top: 25px;
+    background: linear-gradient(145deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03));
+    border-radius: 18px;
+    padding: 25px;
+    backdrop-filter: blur(12px);
+    box-shadow: 0 0 18px rgba(147, 51, 234, 0.25);
+}
+
+.rule-card {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    background:rgba(255,255,255,0.08);
+    padding:20px;
+    border-radius:14px;
+    margin-bottom:15px;
+}
+
+.qty-box {
+    width:60px;
+    padding:8px;
+    background:rgba(255,255,255,0.15);
+    border:none;
+    color:white;
+    border-radius:8px;
+    text-align:center;
+}
+</style>
+
+<h1 class="page-title">⚙ Auto-Order Configuration</h1>
+<p class="subtitle">Manage reorder automation settings & activity</p>
+
+<!-- ============================ TOP SMALL CARDS ============================ -->
+<div class="top-row">
+
+    <!-- Left Card -->
+    <div class="top-card">
+        <h2><i class="fa-solid fa-sliders"></i> Auto-Order Status</h2>
+
+        {% if settings %}
+        <label class="switch">
+            <input type="checkbox" id="toggleAuto" {{ "checked" if settings.auto_order_enabled else "" }}>
+            <span class="slider"></span>
+        </label>
+
+        <p style="color:#34d399; margin-top:5px; font-weight:600;">
+            {{ "Active" if settings.auto_order_enabled else "Inactive" }}
+        </p>
+
+        <label>Minimum Stock Level</label>
+        <input class="input" id="minStock" type="number" value="{{ settings.min_stock_level }}">
+
+        <label>Lead Time (days)</label>
+        <input class="input" id="leadTime" type="number" value="{{ settings.lead_time_days }}">
+
+        <button onclick="saveGlobal()" 
+            style="margin-top:15px; padding:10px 25px; border:none; background:linear-gradient(90deg,#3b82f6,#06b6d4); border-radius:10px; color:white;">
+            Save
+        </button>
+
+        {% endif %}
+    </div>
+
+    <!-- Right Card -->
+    <div class="top-card">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <h2><i class="fa-solid fa-gear"></i> Global Settings</h2>
+            <button style="padding:8px 15px; background:rgba(255,255,255,0.1); border-radius:10px; border:none; color:white;">
+                Configure
+            </button>
+        </div>
+
+        <p>Minimum Stock Level: <span style="float:right; font-weight:600;">{{ settings.min_stock_level }}%</span></p>
+        <p>Reorder Quantity: <span style="float:right; font-weight:600;">Auto-calculated</span></p>
+        <p>Lead Time: <span style="float:right; font-weight:600;">{{ settings.lead_time_days }} days</span></p>
+
+    </div>
+
+</div>
+
+<!-- ============================ ACTIVITY TABLE ============================ -->
+<br>
+<h2><i class="fa-solid fa-clock-rotate-left"></i> Auto-Reorder Activity</h2>
+
+<div class="activity-row activity-head">
+    <div>Date</div>
+    <div>Product ID</div>
+    <div>Product Name</div>
+    <div>Supplier</div>
+    <div>Report</div>
+</div>
+
+{% for a in activity %}
+<div class="activity-row">
+
+    <div>{{ a.date }}</div>
+
+
+    <div>{{ a.product_id }}</div>
+
+    <div>{{ a.product_name }}</div>
+
+    <div>{{ a.supplier_name }} (ID:{{ a.supplier_id }})</div>
+
+
+    <div>
+        <a href="{{ url_for('auto_order_bp.order_report', order_id=a.id) }}" target="_blank"> Download PDF
+</a>
+
+
+    </div>
+
+</div>
+{% endfor %}
+
+<!-- ============================ PRODUCT RULES ============================ -->
+<div class="full-width-card">
+    <h2><i class="fa-solid fa-list-check"></i> Product Rules</h2>
+
+    {% for r in rules %}
+    <div class="rule-card">
+
+        <div>
+            <div class="rule-title">{{ r.product_name }}</div>
+            <small style="color:#a5b4fc;">Reorder Qty</small>
+        </div>
+
+        <input class="qty-box" value="{{ r.reorder_quantity }}" onchange="updateRule({{ r.rule_id }}, this.value)">
+
+        <label class="switch">
+            <input type="checkbox" onclick="toggleRule({{ r.rule_id }})"
+                   {{ "checked" if r.is_enabled else "" }}>
+            <span class="slider"></span>
+        </label>
+
+    </div>
+    {% endfor %}
+</div>
+
+<script>
+function saveGlobal() {
+    fetch("/dashboard/reorder/toggle_global", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            min_stock_level: document.getElementById("minStock").value,
+            lead_time_days: document.getElementById("leadTime").value
+        })
+    })
+    .then(r => r.json())
+    .then(() => { location.reload(); });
+}
+
+function toggleRule(id) {
+    fetch(`/dashboard/reorder/toggle_rule/${id}`, { method: "POST" });
+}
+
+function updateRule(id, qty) {
+    fetch("/dashboard/reorder/update_rule", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ rule_id: id, reorder_quantity: qty })
+    });
+}
+</script>
+
+{% endblock %}

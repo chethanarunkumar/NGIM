@@ -1,0 +1,79 @@
+{% extends "dashboard.html" %}
+{% block content %}
+
+<h1>All Products</h1>
+
+<table class="product-table">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Product Name</th>
+      <th>Category</th>
+      <th>Supplier</th>
+      <th>Stock</th>
+      <th>Price (₹)</th>
+      <th>Last Updated</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for p in products %}
+    <tr>
+      <td>{{ p.id }}</td>
+      <td>{{ p.name }}</td>
+      <td>{{ p.category }}</td>
+      <td>{{ p.supplier or '—' }}</td>
+      <td>{{ p.stock_qty }}</td>
+      <td>{{ "{:,.2f}".format(p.selling_price) }}</td>
+     <td>{{ p.updated_at.strftime('%Y-%m-%d %H:%M') if p.updated_at else '—' }}</td>
+
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<a href="{{ url_for('products.dashboard') }}" class="back-btn">⬅ Back to Dashboard</a>
+
+
+<style>
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    border-radius: 12px;
+    overflow: hidden;
+    background: rgba(255,255,255,0.05);
+  }
+  th, td {
+    padding: 12px;
+    text-align: left;
+  }
+  th {
+    background: rgba(255,255,255,0.1);
+    color: #93c5fd;
+  }
+  tr:nth-child(even) { background: rgba(255,255,255,0.03); }
+  .back-btn {
+  margin-top: 15px;
+  background: #4FA8FF;
+  border: 1px solid #A7D4FF;
+  color: white;
+  padding: 12px 22px;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s;
+  text-decoration: none;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.back-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+  border-color: #bbdefb;
+}
+
+</style>
+
+{% endblock %}

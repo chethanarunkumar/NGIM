@@ -1,0 +1,156 @@
+{% extends "dashboard.html" %}
+{% block content %}
+
+<style>
+    body {
+        background: linear-gradient(135deg, #1a0033, #3c0273);
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .bill-box {
+        background: rgba(255, 255, 255, 0.08);
+        backdrop-filter: blur(12px);
+        padding: 35px;
+        max-width: 900px;
+        margin: 30px auto;
+        border-radius: 15px;
+        color: #fff;
+        border: 1px solid rgba(255, 255, 255, 0.20);
+    }
+
+    .bill-header {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .bill-header h2 {
+        font-size: 32px;
+        font-weight: 700;
+        margin: 0;
+    }
+
+    .bill-header small {
+        opacity: 0.85;
+        font-size: 14px;
+    }
+
+    hr {
+        border: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+        margin: 20px 0;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+    }
+
+    th, td {
+        padding: 12px 10px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.20);
+        font-size: 15px;
+        color: #fff;
+    }
+
+    th {
+        font-weight: 600;
+        opacity: 0.95;
+        font-size: 16px;
+    }
+
+    .total-row {
+        text-align: right;
+        font-size: 20px;
+        font-weight: 700;
+        margin-top: 10px;
+    }
+
+    /* Fixes black box issue (■) */
+    td, th {
+        font-feature-settings: "liga" 0;
+        -webkit-font-smoothing: antialiased;
+    }
+
+    /* Print button */
+    .btn-print {
+        margin: 25px auto 0;
+        display: block;
+        padding: 12px 25px;
+        background: linear-gradient(90deg, #8a2be2, #ff00d4);
+        border: none;
+        border-radius: 10px;
+        color: #fff;
+        cursor: pointer;
+        font-size: 15px;
+        transition: 0.2s;
+    }
+
+    .btn-print:hover {
+        transform: scale(1.05);
+        opacity: 0.9;
+    }
+</style>
+
+<div class="bill-box">
+
+    <!-- COMPANY DETAILS -->
+    <div class="bill-header">
+        <h2>NXT GEN Inventory</h2>
+        <small>Bengaluru – 560003</small>
+        <small>Phone: +91 3121030103</small>
+        <small>GSTIN: 29CYCM2314CT17</small>
+    </div>
+
+    <hr>
+
+    <!-- BILL INFO -->
+    <p><strong>Bill No:</strong> {{ bill_no }}</p>
+    <p><strong>Date:</strong> {{ items[0].sale_date if items else "" }}</p>
+    <p><strong>Biller ID:</strong> {{ items[0].biller_id if items else "N/A" }}</p>
+
+    <hr>
+
+    <!-- PRODUCT TABLE -->
+    <table>
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Qty</th>
+                <th>Price (₹)</th>
+                <th>Total (₹)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for it in items %}
+            <tr>
+                <td>{{ it.product_name }}</td>
+                <td>{{ it.qty_sold }}</td>
+                <td>{{ "%.2f"|format((it.total_amount / it.qty_sold)|float) }}</td>
+                <td>{{ "%.2f"|format(it.total_amount|float) }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <hr>
+
+    <!-- GST -->
+    {% set gst = total * 0.18 %}
+    {% set grand_total = total + gst %}
+
+    <p><strong>Subtotal:</strong> ₹{{ "%.2f"|format(total) }}</p>
+    <p><strong>GST (18%):</strong> ₹{{ "%.2f"|format(gst) }}</p>
+
+    <p class="total-row">Grand Total: ₹{{ "%.2f"|format(grand_total) }}</p>
+
+    <hr>
+
+    <p style="text-align:center; margin-top:20px;">Thank you for shopping with NXT GEN Inventory!</p>
+
+    <!-- Print Button -->
+    <button class="btn-print" onclick="window.print()">Print / Save PDF</button>
+
+</div>
+
+{% endblock %}

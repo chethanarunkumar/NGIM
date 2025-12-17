@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Login | NXT GEN Inventory</title>
+
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      font-family: "Poppins", sans-serif;
+
+      background:
+        linear-gradient(rgba(70, 0, 120, 0.65), rgba(90, 0, 150, 0.65)),
+        url("{{ url_for('static', filename='img/hero_bg.png') }}");
+
+      background-size: cover;
+      background-position: center;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .login-container {
+      width: 380px;
+      padding: 40px;
+      border-radius: 22px;
+      background: rgba(255,255,255,0.12);
+      backdrop-filter: blur(16px);
+      box-shadow: 0 15px 40px rgba(0,0,0,0.25);
+      color: white;
+      text-align: center;
+    }
+
+    h2 {
+      margin-bottom: 28px;
+      font-size: 28px;
+      font-weight: 600;
+    }
+
+    .input-group {
+      position: relative;
+      width: 100%;
+    }
+
+
+    input {
+      width: 100%;
+      padding: 12px 48px 12px 20px; /* space for eye */
+      border-radius: 25px;
+      border: none;
+      margin: 12px 0;
+      outline: none;
+      background: rgba(255,255,255,0.25);
+      color: white;
+      font-size: 16px;
+      box-sizing: border-box;
+    }
+
+
+    input::placeholder {
+      color: #e6e6e6;
+    }
+
+    /* 👁  eye button */
+    .eye-btn {
+      position: absolute;
+      right: 18px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: transparent;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      color: rgba(255,255,255,0.85);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .eye-btn:hover {
+      color: #ffffff;
+    }
+
+    .btn {
+      width: 100%;
+      margin-top: 10px;
+      padding: 14px;
+      border-radius: 30px;
+      border: none;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      color: white;
+      background: linear-gradient(90deg, #60a5fa, #9333ea, #ec4899);
+      transition: 0.25s;
+    }
+
+    .btn:hover {
+      transform: scale(1.03);
+    }
+
+    a {
+      color: #ffeb3b;
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    p {
+      margin-top: 14px;
+      font-size: 14px;
+    }
+
+    /* Error box */
+    .error-box {
+      background: rgba(255, 70, 70, 0.85);
+      padding: 10px;
+      border-radius: 10px;
+      margin-bottom: 15px;
+      font-size: 14px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="login-container">
+    <h2>Welcome Back 👋</h2>
+
+    {% if error %}
+      <div class="error-box">{{ error }}</div>
+    {% endif %}
+
+    <form action="{{ url_for('auth.login') }}" method="POST">
+
+      <div class="input-group">
+        <input type="email" name="email" placeholder="Email" required>
+      </div>
+
+      <div class="input-group">
+        <input type="password" id="password" name="password" placeholder="Password" required>
+
+        <button type="button" class="eye-btn" onclick="togglePassword()">
+          <!-- eye-off -->
+          <svg id="eye-off" width="20" height="20" viewBox="0 0 24 24" fill="none">
+            <path d="M3 3l18 18" stroke="currentColor" stroke-width="2"/>
+            <path d="M10.6 10.6a2 2 0 002.8 2.8" stroke="currentColor" stroke-width="2"/>
+            <path d="M1 12c1.7-4.9 6-8 11-8" stroke="currentColor" stroke-width="2"/>
+            <path d="M23 12c-1.7 4.9-6 8-11 8" stroke="currentColor" stroke-width="2"/>
+          </svg>
+
+          <!-- eye-on -->
+          <svg id="eye-on" width="20" height="20" viewBox="0 0 24 24" fill="none" style="display:none">
+            <path d="M1 12c1.7-4.9 6-8 11-8s9.3 3.1 11 8c-1.7 4.9-6 8-11 8s-9.3-3.1-11-8z"
+                  stroke="currentColor" stroke-width="2"/>
+            <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/>
+          </svg>
+        </button>
+      </div>
+
+      <button class="btn" type="submit">Login</button>
+    </form>
+
+    <p><a href="#">Forgot Password?</a></p>
+    <p>Don’t have an account? Contact admin!</p>
+  </div>
+
+<script>
+  function togglePassword() {
+    const pwd = document.getElementById("password");
+    const eyeOn = document.getElementById("eye-on");
+    const eyeOff = document.getElementById("eye-off");
+
+    if (pwd.type === "password") {
+      pwd.type = "text";
+      eyeOn.style.display = "block";
+      eyeOff.style.display = "none";
+    } else {
+      pwd.type = "password";
+      eyeOn.style.display = "none";
+      eyeOff.style.display = "block";
+    }
+  }
+</script>
+
+</body>
+</html>

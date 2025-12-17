@@ -1,0 +1,318 @@
+{% extends "dashboard.html" %}
+{% block content %}
+
+<style>
+:root{
+  --bg:#0f1230;
+  --card: rgba(255,255,255,0.05);
+  --muted:#c0c8d6;
+  --accent:#ffd166;
+  --border:rgba(255,255,255,0.15);
+}
+
+.container-wide{width:100%; color:white;}
+
+.header-row{
+  display:flex; justify-content:space-between;
+  align-items:center; margin-bottom:20px;
+}
+
+.btn{
+  background:var(--accent);
+  padding:10px 20px;
+  border-radius:10px;
+  font-weight:700;
+  border:none;
+  color:black;
+  cursor:pointer;
+}
+
+.form-block{
+  background:var(--card);
+  padding:20px;
+  border-radius:14px;
+  border:1px solid var(--border);
+  margin-bottom:25px;
+}
+
+.form-inline{
+  display:flex;
+  align-items:flex-end;
+  gap:25px;
+  flex-wrap:wrap;
+}
+
+.form-inline input,
+.form-inline select{
+  padding:10px 12px;
+  border-radius:8px;
+  background:rgba(255,255,255,0.06);
+  border:1px solid var(--border);
+  color:white;
+}
+
+.layout-grid{
+  display:grid;
+  grid-template-columns: 1.4fr 0.6fr;
+  gap:25px;
+}
+
+.card{
+  background:var(--card);
+  padding:20px;
+  border-radius:14px;
+  border:1px solid var(--border);
+  margin-bottom:20px;
+}
+
+.product-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 11px;
+    width: 420px;
+    padding: 18px 22px;
+    margin: 0 auto 10px auto;
+    text-align: left;
+}
+
+.product-card h2 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+.product-card p {
+    margin-top: 6px;
+    font-size: 1rem;
+    color: var(--muted);
+}
+
+.forecast-card{
+    padding:25px;
+    border-radius:14px;
+    background:var(--card);
+    border:1px solid var(--border);
+    margin-bottom:20px;
+    text-align:center;
+}
+.forecast-title{font-size:1.3rem; margin-bottom:20px;}
+#forecastChart{height:300px !important; width:100% !important;}
+
+.kpi-card{
+  background:var(--card);
+  padding:20px;
+  border-radius:14px;
+  border:1px solid var(--border);
+  margin-bottom:22px;
+}
+
+.badge{padding:6px 14px; border-radius:20px; font-weight:700;}
+.badge.high{background:rgba(255,0,0,0.15); color:#ff7b7b;}
+.badge.medium{background:rgba(255,200,0,0.15); color:#ffd166;}
+.badge.low{background:rgba(0,255,120,0.15); color:#9afcb3;}
+
+.bundle-list{
+  max-height:220px;
+  overflow-y:auto;
+  list-style:none;
+  padding-left:0;
+}
+
+.bundle-item{
+  padding:10px 0;
+  border-bottom:1px dashed var(--border);
+  display:flex;
+  justify-content:space-between;
+}
+
+/* TOP 10 FORECAST REPORT */
+.top10-card{
+    background:var(--card);
+    padding:20px;
+    border-radius:14px;
+    border:1px solid var(--border);
+    margin-top:20px;
+}
+
+.top10-card h3{
+    margin-bottom:15px;
+    font-size:1.4rem;
+}
+
+.top10-table{
+    width:100%;
+    border-collapse:collapse;
+    color:white;
+}
+
+.top10-table thead th{
+    background:rgba(255,255,255,0.1);
+    padding:12px;
+    font-weight:700;
+    text-align:left;
+}
+
+.top10-table td{
+    padding:12px;
+    border-bottom:1px solid rgba(255,255,255,0.15);
+}
+
+.top10-table tr:hover td{
+    background:rgba(255,255,255,0.05);
+}
+
+@media(max-width:900px){
+  .layout-grid{grid-template-columns:1fr;}
+}
+</style>
+
+<div class="container-wide">
+
+<!-- HEADER -->
+<div class="header-row">
+  <h1>AI Recommendation Engine</h1>
+</div>
+
+<!-- FORM -->
+<div class="form-block">
+  <form method="POST" class="form-inline">
+      <div>
+        <label>Product</label><br>
+        <select name="product_id">
+          {% for _, p in products.iterrows() %}
+          <option value="{{ p.product_id }}"
+           {% if result and result.product.product_id == p.product_id %} selected {% endif %}>
+            {{ p.product_name }}
+          </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div>
+        <label>Forecast Month</label><br>
+        <input type="month" name="forecast_month" value="{{ result.forecast_month if result else '' }}">
+      </div>
+
+      <div>
+        <label>Current Stock</label><br>
+        <input type="number" name="current_stock" value="{{ result.stock if result else 50 }}">
+      </div>
+
+      <button class="btn" type="submit" style="height:42px;">Generate</button>
+  </form>
+</div>
+
+{% if result %}
+<div class="layout-grid">
+
+    <!-- LEFT -->
+    <div>
+
+        <!-- PRODUCT -->
+        <div class="card product-card">
+          <h2>{{ result.product.product_name }}</h2>
+          <p style="color:var(--muted);">Category: {{ result.product.category }}</p>
+        </div>
+
+        <!-- FORECAST -->
+        <div class="forecast-card">
+            <h3 class="forecast-title">📊 Forecast: {{ result.forecast_total }} units</h3>
+            <div id="forecastChart"></div>
+        </div>
+
+        <!-- TOP 10 FORECAST PRODUCTS -->
+        {% if top10 %}
+        <div class="top10-card">
+            <h3>📌 Top 10 Forecast Products ({{ result.forecast_month }})</h3>
+
+            <table class="top10-table">
+                <thead>
+                    <tr>
+                        <th>Product ID</th>
+                        <th>Name</th>
+                        <th>Forecast Qty</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in top10 %}
+                    <tr>
+                        <td>{{ row.product_id }}</td>
+                        <td>{{ row.product_name }}</td>
+                        <td>{{ row.forecast_qty }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+
+    </div>
+
+    <!-- RIGHT -->
+    <div>
+
+        <div class="kpi-card">
+          <h3>📦 Inventory Recommendation</h3>
+          <p>Avg Daily: <b>{{ result.inventory.avg_daily }}</b></p>
+          <p>Days Supply: <b>{{ result.inventory.days_of_supply }}</b></p>
+          <p>Suggested Order: <b>{{ result.inventory.suggested_order }}</b></p>
+
+          {% if result.inventory.days_of_supply <= 4 %}
+            <span class="badge high">HIGH STOCKOUT RISK</span>
+          {% elif result.inventory.days_of_supply <= 14 %}
+            <span class="badge medium">MEDIUM RISK</span>
+          {% else %}
+            <span class="badge low">LOW RISK</span>
+          {% endif %}
+        </div>
+
+        <div class="kpi-card">
+          <h3>📅 Seasonal Analysis</h3>
+          <p>Peak Month: <b>{{ result.season.peak_month }}</b></p>
+          <p>Low Month: <b>{{ result.season.low_month }}</b></p>
+        </div>
+
+        <div class="kpi-card">
+          <h3>🎁 Bundle Suggestions</h3>
+          <ul class="bundle-list">
+            {% for b in result.bundles %}
+            <li class="bundle-item">
+              <span>{{ b.products | join(" + ") }}</span>
+              <span style="color:var(--muted);"></span>
+            </li>
+            {% endfor %}
+          </ul>
+        </div>
+
+    </div>
+
+</div>
+{% endif %}
+</div>
+
+<!-- PLOTLY -->
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+{% if result %}
+<script>
+const y = {{ result.forecast_list | tojson }};
+const x = y.map((_, i) => {
+  const d = new Date();
+  d.setDate(d.getDate() + i + 1);
+  return d.toISOString().slice(0,10);
+});
+
+Plotly.newPlot("forecastChart", [{
+    x:x, y:y,
+    type:"scatter",
+    mode:"lines+markers",
+    marker:{size:5}
+}], {
+    margin:{t:45, l:40, r:20, b:40},
+    paper_bgcolor:"rgba(0,0,0,0)",
+    plot_bgcolor:"rgba(0,0,0,0)"
+}, {displayModeBar:false});
+</script>
+{% endif %}
+
+{% endblock %}

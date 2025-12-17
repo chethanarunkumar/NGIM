@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>NXT GEN | Smart Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Poppins", sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #0f172a, #1e1b4b, #3b0764);
+      color: white;
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 260px;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 25px;
+      backdrop-filter: blur(10px);
+    }
+
+    .logo {
+      color: #60a5fa;
+      font-size: 22px;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .sidebar a {
+      display: flex;
+      align-items: center;
+      padding: 12px 18px;
+      margin: 10px 0;
+      border-radius: 12px;
+      color: #cbd5e1;
+      text-decoration: none;
+      transition: 0.3s;
+      gap: 10px;
+    }
+
+    .sidebar a:hover {
+      background: linear-gradient(90deg, #9333ea, #ec4899);
+      color: white;
+      transform: translateX(5px);
+    }
+
+    .logout {
+      margin-top: 30px;
+      background: linear-gradient(90deg, #ec4899, #9333ea);
+      padding: 12px;
+      border-radius: 20px;
+      text-align: center;
+      color: white;
+      text-decoration: none;
+      font-weight: 600;
+      display: block;
+    }
+
+    /* Main Section */
+    .main {
+      flex: 1;
+      padding: 50px;
+      background: linear-gradient(135deg, #111827, #1e1b4b, #3b0764);
+      border-left: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    h1 {
+      font-size: 30px;
+      color: #ffffff !important;
+      margin-bottom: 15px;
+    }
+
+    p {
+      font-size: 16px;
+      color: #cbd5e1;
+      margin-bottom: 30px;
+    }
+
+    /* Quick Stats Section */
+    .stats-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 25px;
+      margin-bottom: 50px;
+    }
+
+    .stat {
+      background: linear-gradient(135deg, #1e1b4b, #3b0764);
+      text-align: center;
+      padding: 30px 20px;
+      border-radius: 15px;
+      box-shadow: 0 0 15px rgba(147, 51, 234, 0.3);
+      transition: transform 0.3s ease;
+    }
+
+    .stat:hover {
+      transform: scale(1.05);
+    }
+
+    .stat h2 {
+      font-size: 32px;
+      color: #60a5fa;
+      margin-bottom: 5px;
+    }
+
+    .stat p {
+      font-size: 14px;
+      color: #e2e8f0;
+    }
+
+    /* Activity Section */
+    .activity-section {
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03));
+      border-radius: 15px;
+      padding: 25px;
+      backdrop-filter: blur(15px);
+      box-shadow: 0 0 20px rgba(147, 51, 234, 0.3);
+      overflow-y: auto;
+      max-height: 320px;
+    }
+
+    .activity-section h3 {
+      color: #c084fc;
+      margin-bottom: 20px;
+      font-weight: 700;
+      text-shadow: 0 0 10px rgba(192, 132, 252, 0.5);
+    }
+
+    .activity-feed {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .activity-card {
+      display: flex;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.07);
+      border-radius: 12px;
+      padding: 14px 18px;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 10px rgba(147, 51, 234, 0.1);
+    }
+
+    .activity-card:hover {
+      transform: translateX(5px);
+      background: linear-gradient(90deg, rgba(147, 51, 234, 0.3), rgba(236, 72, 153, 0.3));
+      box-shadow: 0 0 20px rgba(236, 72, 153, 0.4);
+    }
+
+    .activity-icon {
+      font-size: 22px;
+      margin-right: 15px;
+      text-shadow: 0 0 5px rgba(236, 72, 153, 0.7);
+    }
+
+    .activity-text {
+      flex: 1;
+      font-size: 15px;
+      color: #e2e8f0;
+    }
+
+    .activity-time {
+      font-size: 12px;
+      opacity: 0.8;
+      color: #d4d4d8;
+    }
+
+    .activity-section::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .activity-section::-webkit-scrollbar-thumb {
+      background: linear-gradient(180deg, #9333ea, #ec4899);
+      border-radius: 10px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="sidebar">
+    <div class="logo">⚡ NXT GEN</div>
+
+<a href="{{ url_for('main.dashboard') }}"
+   class="{% if request.endpoint == 'main.dashboard' %}active{% endif %}">
+   Home
+</a>
+
+<a href="{{ url_for('products.billing_page') }}"
+   class="{% if request.endpoint == 'products.billing_page' %}active{% endif %}">
+   Billing
+</a>
+
+<a href="{{ url_for('products.dashboard') }}"
+   class="{% if request.endpoint == 'products.dashboard' %}active{% endif %}">
+   Product Dashboard
+</a>
+
+<a href="{{ url_for('auto_order_bp.auto_order_page') }}"
+   class="{% if request.endpoint == 'auto_order_bp.auto_order_page' %}active{% endif %}">
+   Auto Order
+</a>
+
+<a href="{{ url_for('alerts_bp.alerts_home') }}"
+   class="{% if request.endpoint == 'alerts_bp.alerts_home' %}active{% endif %}">
+   Alerts
+</a>
+
+<a href="{{ url_for('analytics_bp.analytics_dashboard') }}"
+   class="{% if request.endpoint == 'analytics_bp.analytics_dashboard' %}active{% endif %}">
+   Analytics
+</a>
+
+<a href="{{ url_for('main.recommendations') }}"
+   class="{% if request.endpoint == 'main.recommendations' %}active{% endif %}">
+   Recommendations
+</a>
+
+<a href="{{ url_for('main.logout') }}" class="logout">Logout</a>
+
+
+  </div>
+
+  <div class="main">
+    {% block content %}
+    <h1>Welcome to NXT GEN Automated Dashboard</h1>
+    <p>Here’s your live system</p>
+
+    <!-- Stats Section -->
+    <div class="stats-container">
+      <div class="stat">
+        <h2>{{ total_products or 0 }}</h2>
+        <p>Total Products</p>
+      </div>
+
+      <div class="stat">
+        <h2>{{ expiring_soon or 0 }}</h2>
+        <p>Expiring Soon</p>
+      </div>
+
+      <div class="stat">
+        <h2>₹{{ "{:,.2f}".format(total_revenue or 0) }}</h2>
+        <p>Monthly Revenue</p>
+      </div>
+
+      <div class="stat">
+        <h2>{{ low_stock or 0 }}</h2>
+        <p>Low Stock Items</p>
+      </div>
+    </div>
+
+    <!-- Recent Activities -->
+    <div class="activity-section">
+      <h3>🕒 Recent Activities</h3>
+
+      <ul class="activity-feed">
+
+        {% if recent_activities %}
+          {% for act in recent_activities %}
+            <li class="activity-card">
+              <span class="activity-icon">{{ act.icon }}</span>
+
+              <div class="activity-text">
+                {{ act.message }}
+                {% if act.time %}
+                  <div class="activity-time">
+                    {{ act.time.strftime("%d %b, %I:%M %p") }}
+                  </div>
+                {% endif %}
+              </div>
+            </li>
+          {% endfor %}
+
+        {% else %}
+          <li class="activity-card">
+            <span class="activity-icon">🔍</span>
+            <span class="activity-text">No recent activity found.</span>
+          </li>
+        {% endif %}
+
+      </ul>
+    </div>
+
+    {% endblock %}
+  </div>
+</body>
+
+</html>

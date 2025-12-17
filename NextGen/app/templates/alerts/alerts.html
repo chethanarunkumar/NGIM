@@ -1,0 +1,169 @@
+{% extends "dashboard.html" %}
+{% block content %}
+
+<style>
+.page-title {
+    font-size: 32px;
+    font-weight: 700;
+    color: white;
+}
+
+.subtitle {
+    color: #9ca3af;
+    margin-bottom: 25px;
+}
+
+/* Tabs */
+.alert-tabs {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.tab-btn {
+    padding: 10px 18px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 10px;
+    cursor: pointer;
+    color: #e5e7eb;
+    border: 1px solid rgba(255,255,255,0.1);
+    font-size: 15px;
+    transition: 0.2s;
+}
+
+.tab-btn.active {
+    background: #2563eb;
+    color: white;
+}
+
+.tab-btn span {
+    background: rgba(255,255,255,0.15);
+    padding: 3px 8px;
+    margin-left: 6px;
+    border-radius: 6px;
+    font-size: 13px;
+}
+
+/* Table Styling */
+.alert-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.alert-table th, .alert-table td {
+    padding: 12px 15px;
+    text-align: left;
+    color: white;
+}
+
+.alert-table th {
+    background: rgba(255,255,255,0.12);
+}
+
+.alert-table tr:nth-child(even) {
+    background: rgba(255,255,255,0.05);
+}
+
+/* Color coding */
+.expiry-red {
+    color: #ef4444;        /* Red */
+    font-weight: 600;
+}
+
+.expiry-yellow {
+    color: #fbbf24;        /* Yellow */
+    font-weight: 600;
+}
+
+.expiry-green {
+    color: #10b981;        /* Green */
+    font-weight: 600;
+}
+
+.resolve-btn {
+    padding: 6px 14px;
+    background: #10b981;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    color: white;
+}
+</style>
+
+<h1 class="page-title">Expiry Alerts</h1>
+<p class="subtitle">Monitor products nearing expiry</p>
+
+<!-- TABS -->
+<div class="alert-tabs">
+    <button class="tab-btn active" onclick="showTab('all')">
+        All Alerts <span>{{ counts.all }}</span>
+    </button>
+    <button class="tab-btn" onclick="showTab('resolved')">
+        Resolved <span>{{ counts.resolved }}</span>
+    </button>
+</div>
+
+<!-- TABLE VIEW -->
+<table class="alert-table">
+    <thead>
+        <tr>
+            <th>Product ID</th>
+            <th>Product Name</th>
+            <th>Expiry Date</th>
+            <th>Days Left</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+
+    <tbody id="alertRows">
+        {% for a in alerts %}
+        {% set days_left = (a.expiry_date - current_time.date()).days %}
+        {% set color_class =
+            'expiry-red' if days_left <= 2 else
+            'expiry-yellow' if days_left <= 5 else
+            'expiry-green'
+        %}
+
+        <tr class="alert-row" data-status="{{ a.status|lower }}">
+            <td>{{ a.product_id }}</td>
+            <td>{{ a.product_name }}</td>
+
+            <td class="{{ color_class }}">{{ a.expiry_date }}</td>
+            <td class="{{ color_class }}">{{ days_left }} days</td>
+
+            <td>
+                {% if a.status != "Resolved" %}
+                <button class="resolve-btn" onclick="resolveAlert({{ a.alert_id }})">
+                    Resolve
+                </button>
+                {% else %}
+                <span style="color:#10b981;">Resolved</span>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<script>
+function showTab(type) {
+    document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.remove("active"));
+    event.target.classList.add("active");
+
+    document.querySelectorAll(".alert-row").forEach(row => {
+        row.style.display = "table-row";
+
+        if (type === "resolved" && row.dataset.status !== "resolved") {
+            row.style.display = "none";
+        }
+    });
+}
+
+function resolveAlert(id) {
+    fetch(`/alerts/resolve/${id}`, { method: "POST" })
+    .then(() => location.reload());
+}
+</script>
+
+{% endblock %}

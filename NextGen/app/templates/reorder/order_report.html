@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Purchase Order</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            color: #222;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 40px;
+        }
+
+        .company-info {
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .company-name {
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        h1 {
+            margin-top: 20px;
+            font-size: 32px;
+            border-bottom: 2px solid #555;
+            padding-bottom: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 25px;
+        }
+
+        table, th, td {
+            border: 1px solid #bbb;
+        }
+
+        th, td {
+            padding: 12px;
+            font-size: 14px;
+        }
+
+        th {
+            background: #f3f3f3;
+            text-align: left;
+        }
+
+        .total-row td {
+            font-weight: bold;
+            background: #f9f9f9;
+        }
+
+        .download {
+            margin-top: 30px;
+            padding: 12px 25px;
+            display: inline-block;
+            background: black;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- COMPANY HEADER SECTION -->
+    <div class="header-top">
+        <div class="company-info">
+            <div class="company-name">NGIM - NextGen Inventory Management</div>
+            <div>Bangalore, India</div>
+            <div>Email: ngim@gmail.com</div>
+            <div>Phone: +91 3121030103</div>
+        </div>
+    </div>
+
+    <h1>PURCHASE ORDER</h1>
+
+    <div class="header">
+        <div><b>Order ID:</b> {{ report.id }}</div>
+        <div><b>Issue Date:</b> {{ report.date }}</div>
+        <div><b>Supplier:</b> {{ report.supplier_name }} (ID: {{ report.supplier_id }})</div>
+    </div>
+
+    <table>
+        <tr>
+            <th>Description</th>
+            <th>Quantity</th>
+            <th>Unit Price (₹)</th>
+            <th>Amount (₹)</th>
+        </tr>
+
+        <tr>
+            <td>{{ report.product_name }} (ID: {{ report.product_id }})</td>
+            <td>{{ report.quantity }}</td>
+            <td>{{ report.unit_price }}</td>
+            <td>{{ report.total_amount }}</td>
+        </tr>
+
+        <tr class="total-row">
+            <td colspan="3">TOTAL (₹)</td>
+            <td>{{ report.total_amount }}</td>
+        </tr>
+    </table>
+
+    <a href="#" onclick="window.print()" class="download">Download / Print</a>
+
+</body>
+</html>

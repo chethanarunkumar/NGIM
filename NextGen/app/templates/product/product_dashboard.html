@@ -1,0 +1,480 @@
+{% extends "dashboard.html" %}
+{% block content %}
+
+<h1>Product Dashboard</h1>
+
+<!-- Stats Section -->
+<div class="stats">
+  <div class="stat-card gradient">
+    <strong>Total Products:</strong> {{ total_products }}
+  </div>
+  <div class="stat-card gradient">
+    <strong>Expiring Soon:</strong> {{ expiring_soon }}
+  </div>
+  <div class="stat-card gradient">
+    <strong>Low Stock:</strong> {{ low_stock }}
+  </div>
+  <div class="stat-card gradient">
+    <strong>Total Revenue:</strong> ₹{{ "{:,.2f}".format(total_revenue) }}
+  </div>
+</div>
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+
+<!-- Buttons Section -->
+<div class="actions">
+  <button class="add-btn" onclick="openAddModal()">Add Product</button>
+  <button class="remove-btn" onclick="openRemoveModal()">Remove Product</button>
+  <a href="{{ url_for('products.view_products') }}" class="view-btn">View Products</a>
+  <button class="add-btn" onclick="openIncreaseStockModal()">Increase Stock</button>
+
+</div>
+
+<!-- Top Products Table -->
+<h2>Top Selling Products</h2>
+<table class="product-table">
+  <thead>
+    <tr>
+      <th>Product Name</th>
+      <th>Units Sold</th>
+      <th>Revenue (₹)</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for p in top_products %}
+      <tr>
+        <td>{{ p.product_name }}</td>
+        <td>{{ p.units_sold }}</td>
+        <td>{{ "{:,.2f}".format(p.revenue) }}</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<!-- ADD PRODUCT MODAL -->
+<div id="addModal" class="modal">
+  <div class="modal-content">
+    <h3>Add New Product</h3>
+
+    <!-- note: form posts to main.add_product -->
+    <form id="addProductForm" method="POST" action="{{ url_for('products.add_product') }}">
+      <input type="text" name="product_name" placeholder="Product Name" required>
+      <select name="category" id="categorySelect" required>
+      <option value="">Select Category</option>
+      <option value="add_new">➕ Add New Category</option>
+    </select>
+
+
+      <!-- Supplier Dropdown (populated server-side) -->
+      <select name="supplier_id" id="supplierSelect" required>
+        <option value="">Select Supplier</option>
+        {% for s in suppliers %}
+          <option value="{{ s.id }}">{{ s.name }}</option>
+        {% endfor %}
+        <option value="add_new">➕ Add New Supplier</option>
+      </select>
+
+      <input type="number" name="cost_price" placeholder="Cost Price" required>
+      <input type="number" name="selling_price" placeholder="Selling Price" required>
+      <input type="number" name="stock" placeholder="Stock Available" required>
+      <input type="date" name="expiry_date" required>
+
+      <button type="submit" class="submit-btn">Add Product</button>
+    </form>
+
+    <button class="close-btn" onclick="closeAddModal()">Close</button>
+  </div>
+</div>
+
+<!-- ADD SUPPLIER MODAL -->
+<div id="supplierModal" class="modal">
+  <div class="modal-content">
+    <span class="close-btn" onclick="closeSupplierModal()">✖</span>
+    <h3>➕ Add New Supplier</h3>
+
+    <input type="text" id="sup_name" placeholder="Supplier Name" required>
+    <input type="text" id="sup_contact" placeholder="Contact Number" required>
+    <textarea id="sup_address" placeholder="Address" required></textarea>
+    <input type="number" id="sup_lead" placeholder="Lead Time (days)" required>
+
+    <button class="submit-btn" onclick="addSupplier()">Add Supplier</button>
+  </div>
+</div>
+
+<!-- ADD CATEGORY MODAL -->
+<div id="categoryModal" class="modal">
+  <div class="modal-content">
+    <span class="close-btn" onclick="closeCategoryModal()">✖</span>
+    <h3>➕ Add New Category</h3>
+
+    <input type="text" id="cat_name" placeholder="Category Name" required>
+
+    <button type="button" class="submit-btn" onclick="addCategory()">Add Category</button>
+
+  </div>
+</div>
+
+
+<!-- REMOVE PRODUCT MODAL -->
+<div id="removeModal" class="modal">
+  <div class="modal-content">
+    <h3>Remove Product</h3>
+    <form method="GET" action="{{ url_for('products.remove_product', product_id=0) }}" onsubmit="updateRemoveAction(event)">
+      <input type="number" id="removeId" placeholder="Enter Product ID" required>
+      <button type="submit" class="submit-btn">Remove</button>
+    </form>
+    <button class="close-btn" onclick="closeRemoveModal()">Close</button>
+  </div>
+</div>
+
+
+<!-- INCREASE STOCK MODAL -->
+<div id="increaseStockModal" class="modal">
+  <div class="modal-content">
+    <h3>Increase Stock</h3>
+
+    <select id="stockProductSelect" onchange="loadStockProduct()">
+      <option value="">Select Product</option>
+      {% for p in products %}
+        <option value="{{ p.id }}">{{ p.name }}</option>
+      {% endfor %}
+    </select>
+
+    <p><b>Product ID:</b> <span id="stk_id">-</span></p>
+    
+
+    <input type="date" id="newExpiryDate">
+
+    <input type="number" id="addStockQty" placeholder="Quantity to add" required>
+
+    <button class="submit-btn" onclick="submitIncreaseStock()">Update Stock</button>
+    <button class="close-btn" onclick="closeIncreaseStockModal()">Close</button>
+  </div>
+</div>
+
+
+
+<style>
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+  }
+
+  .stat-card {
+    padding: 20px;
+    border-radius: 15px;
+    font-size: 16px;
+    font-weight: 500;
+    text-align: center;
+    box-shadow: 0 0 10px rgba(147, 51, 234, 0.3);
+  }
+
+  .gradient {
+    background: #3A506B;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+  .actions {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 30px;
+  }
+
+  .add-btn, .remove-btn {
+     background: #1565C0;
+
+
+
+    color: white;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: 0.3s;
+  }
+
+  .remove-btn {
+    background: #1565C0;
+  }
+
+  .add-btn:hover, .remove-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 12px rgba(255,255,255,0.3);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    border-radius: 12px;
+    overflow: hidden;
+    background: rgba(255,255,255,0.05);
+  }
+
+  th, td {
+    padding: 15px;
+    text-align: left;
+  }
+
+  th {
+    background: rgba(255,255,255,0.1);
+    color: #93c5fd;
+    font-size: 16px;
+  }
+
+  td {
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+
+  /* MODALS */
+  .modal {
+    display: none;
+    position: fixed;
+    z-index: 10;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    justify-content: center;
+    align-items: center;
+  }
+
+  .modal .modal-content {
+    background: #1e1b4b;
+    margin: 6% auto;
+    padding: 20px;
+    border-radius: 15px;
+    width: 420px;
+    text-align: center;
+    box-shadow: 0 0 15px rgba(147, 51, 234, 0.4);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .modal-content input, .modal-content select, .modal-content textarea {
+    width: 90%;
+    margin: 6px auto;
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.08);
+    color: white;
+  }
+
+  .modal-content textarea {
+    resize: none;
+    height: 70px;
+  }
+
+  .submit-btn {
+    background: #1E88E5
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+  }
+
+  .close-btn {
+    background: transparent;
+    color: #ec4899;
+    border: none;
+    margin-top: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    align-self: center;
+  }
+
+
+</style>
+
+<script>
+  // ADD PRODUCT MODAL controls
+  function openAddModal() { document.getElementById("addModal").style.display = "flex"; }
+  function closeAddModal() { document.getElementById("addModal").style.display = "none"; }
+
+  // REMOVE MODAL controls
+  function openRemoveModal() { document.getElementById("removeModal").style.display = "flex"; }
+  function closeRemoveModal() { document.getElementById("removeModal").style.display = "none"; }
+
+  function updateRemoveAction(e) {
+    e.preventDefault();
+    let id = document.getElementById('removeId').value;
+    if (id) window.location.href = '/dashboard/products/remove/' + id;
+  }
+
+  // SUPPLIER modal flow
+  document.addEventListener("DOMContentLoaded", function () {
+    const sel = document.getElementById("supplierSelect");
+    if (sel) {
+      sel.addEventListener("change", function () {
+        if (this.value === "add_new") {
+          document.getElementById("supplierModal").style.display = "flex";
+        }
+      });
+    }
+  });
+
+  function closeSupplierModal() {
+    document.getElementById("supplierModal").style.display = "none";
+    const sel = document.getElementById("supplierSelect");
+    if (sel) sel.value = "";
+  }
+
+  // AJAX → Add Supplier
+  async function addSupplier() {
+    const name = document.getElementById("sup_name").value.trim();
+    const contact = document.getElementById("sup_contact").value.trim();
+    const address = document.getElementById("sup_address").value.trim();
+    const lead = document.getElementById("sup_lead").value;
+
+    if (!name || !contact || !address) {
+      alert("Please fill all supplier fields.");
+      return;
+    }
+
+    const res = await fetch("{{ url_for('products.add_supplier') }}", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, contact, address, lead_time: lead })
+    });
+
+    const data = await res.json();
+    if (res.ok && data.id) {
+      // success - add to dropdown
+      const s = document.getElementById("supplierSelect");
+      const option = document.createElement("option");
+      option.value = data.id;
+      option.textContent = name;
+      // insert before the "add new" option (last)
+      s.insertBefore(option, s.lastElementChild);
+      s.value = data.id;
+
+      // close modal
+      closeSupplierModal();
+      alert("Supplier added!");
+    } else {
+      alert("Failed to add supplier.");
+    }
+  }
+
+// increae stock
+
+function openIncreaseStockModal() {
+  document.getElementById("increaseStockModal").style.display = "flex";
+}
+
+function closeIncreaseStockModal() {
+  document.getElementById("increaseStockModal").style.display = "none";
+}
+
+function loadStockProduct() {
+  const pid = document.getElementById("stockProductSelect").value;
+  if (!pid) return;
+
+  fetch(`/dashboard/products/get/${pid}`)
+    .then(res => res.json())
+    .then(p => {
+      document.getElementById("stk_id").innerText = p.id;
+      document.getElementById("stk_expiry").innerText =p.expiry_date ? p.expiry_date.split("T")[0] : "-";
+
+      document.getElementById("stk_qty").innerText = p.stock;
+
+      // reset expiry input each time
+      const expiryInput = document.getElementById("newExpiryDate");
+      if (expiryInput) expiryInput.value = "";
+    });
+}
+
+function submitIncreaseStock() {
+  const pid = document.getElementById("stockProductSelect").value;
+  const qty = document.getElementById("addStockQty").value;
+  const newExpiry = document.getElementById("newExpiryDate")?.value;
+
+  if (!pid || !qty) {
+    alert("Select product and quantity");
+    return;
+  }
+
+  fetch("/dashboard/products/increase-stock", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      product_id: pid,
+      qty: qty,
+      expiry_date: newExpiry || null
+    })
+  }).then(() => location.reload());
+}
+
+// CATEGORY DROPDOWN (supplier-style modal) — FIXED
+document.addEventListener("DOMContentLoaded", () => {
+  const sel = document.getElementById("categorySelect");
+  if (!sel) return;
+
+  // Reset dropdown (keep first + add_new)
+  sel.innerHTML = `
+    <option value="">Select Category</option>
+    <option value="add_new">➕ Add New Category</option>
+  `;
+
+  fetch("/dashboard/products/categories")
+    .then(r => r.json())
+    .then(categories => {
+      console.log("Categories from API:", categories);
+
+      categories.forEach(c => {
+        const opt = document.createElement("option");
+        opt.value = c;
+        opt.textContent = c;
+        sel.insertBefore(opt, sel.querySelector("option[value='add_new']"));
+      });
+    });
+
+  sel.addEventListener("change", () => {
+    if (sel.value === "add_new") {
+      document.getElementById("categoryModal").style.display = "flex";
+    }
+  });
+});
+
+function closeCategoryModal() {
+  document.getElementById("categoryModal").style.display = "none";
+  document.getElementById("categorySelect").value = "";
+}
+
+// AJAX → Add Category
+async function addCategory() {
+  const name = document.getElementById("cat_name").value.trim();
+  if (!name) {
+    alert("Category name required");
+    return;
+  }
+
+  const res = await fetch("/dashboard/products/add-category", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ name })
+  });
+
+  if (res.ok) {
+    const sel = document.getElementById("categorySelect");
+    const opt = new Option(name, name, true, true);
+    sel.insertBefore(opt, sel.querySelector("option[value='add_new']"));
+
+    document.getElementById("cat_name").value = "";
+    closeCategoryModal();
+  } else {
+    alert("Failed to add category");
+  }
+}
+
+</script>
+
+{% endblock %}

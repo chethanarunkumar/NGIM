@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NXT GEN Inventory | Home</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Poppins", sans-serif;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background: linear-gradient(135deg, #7e22ce, #9333ea, #ec4899);
+      background-size: 400% 400%;
+      animation: gradientShift 10s ease infinite;
+      color: white;
+    }
+
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 60px;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    header h1 {
+      font-size: 22px;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: 1px;
+    }
+
+    nav a {
+      color: #fff;
+      text-decoration: none;
+      margin: 0 15px;
+      font-weight: 500;
+      transition: 0.3s;
+    }
+
+    nav a:hover {
+      color: #ffd700;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn {
+      padding: 8px 18px;
+      border-radius: 20px;
+      border: 2px solid white;
+      background: transparent;
+      color: white;
+      cursor: pointer;
+      transition: 0.3s;
+      font-weight: 600;
+    }
+
+    .btn:hover {
+      background: white;
+      color: #9333ea;
+    }
+
+    /* HERO */
+    .hero {
+      text-align: center;
+      padding: 120px 20px;
+    }
+
+    .hero h2 {
+      font-size: 48px;
+      font-weight: 700;
+      margin-bottom: 15px;
+    }
+
+    .hero p {
+      font-size: 18px;
+      color: #f3e8ff;
+      margin-bottom: 35px;
+    }
+
+    .hero .cta {
+      padding: 12px 30px;
+      border-radius: 30px;
+      border: none;
+      background: linear-gradient(90deg, #60a5fa, #9333ea, #ec4899);
+      color: white;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 16px;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .hero .cta:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    }
+
+    /* Sections */
+    section {
+      padding: 80px 60px;
+    }
+
+    .features, .about, .contact {
+      background: white;
+      color: #333;
+      border-top-left-radius: 40px;
+      border-top-right-radius: 40px;
+      margin-top: 60px;
+    }
+
+    .features h3, .about h3, .contact h3 {
+      text-align: center;
+      font-size: 28px;
+      color: #4f46e5;
+      margin-bottom: 40px;
+      font-weight: 700;
+    }
+
+    /* 🌈 Colorful Feature Cards */
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 30px;
+      justify-content: center;
+      max-width: 1100px;
+      margin: auto;
+    }
+
+    .card {
+      background: linear-gradient(135deg, #ede9fe, #fce7f3);
+      padding: 25px;
+      border-radius: 20px;
+      text-align: center;
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+      transition: 0.4s ease;
+      color: #333;
+    }
+
+    .card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    }
+
+    .card h4 {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 10px;
+      color: #3b0764;
+    }
+
+    .card p {
+      font-size: 15px;
+      color: #444;
+      line-height: 1.6;
+    }
+
+    /* 🎨 Individual Gradient Colors */
+    .card:nth-child(1) {
+      background: linear-gradient(135deg, #fbcfe8, #f9a8d4);
+    }
+
+    .card:nth-child(2) {
+      background: linear-gradient(135deg, #bfdbfe, #93c5fd);
+    }
+
+    .card:nth-child(3) {
+      background: linear-gradient(135deg, #c4b5fd, #a78bfa);
+    }
+
+    .card:nth-child(4) {
+      background: linear-gradient(135deg, #fde68a, #fcd34d);
+    }
+
+    /* ABOUT */
+    .about p {
+      max-width: 800px;
+      margin: 0 auto;
+      font-size: 16px;
+      text-align: center;
+      line-height: 1.7;
+    }
+
+    /* CONTACT */
+    .contact p {
+      text-align: center;
+      font-size: 16px;
+      line-height: 1.8;
+    }
+
+    footer {
+      text-align: center;
+      background: rgba(0,0,0,0.7);
+      padding: 15px;
+      color: white;
+      font-size: 14px;
+      letter-spacing: 0.5px;
+    }
+  </style>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+</head>
+
+<body>
+  <!-- Header -->
+  <header>
+    <h1>NXT GEN Inventory</h1>
+    <nav>
+      <a href="#home">Home</a>
+      <a href="#features">Features</a>
+      <a href="#about">About</a>
+      <a href="#contact">Contact</a>
+    </nav>
+    <div class="buttons">
+      <button class="btn" onclick="window.location.href='{{ url_for('auth.login') }}'">Login</button>
+     
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section id="home" class="hero">
+    <h2>Manage Smarter, Sell Faster</h2>
+    <p>Cut Wastage. Boost Profits. Automate Everything.</p>
+    <button class="cta" onclick="window.location.href='{{ url_for('auth.login') }}'">Explore Dashboard</button>
+
+  </section>
+
+ <!-- Features Section -->
+<section id="features" class="features">
+  <h3>Key Features</h3>
+  <div class="feature-grid">
+    <div class="card pink">
+      <h4>📅 Expiry Alerts</h4>
+      <p>Get instant notifications before items expire to reduce wastage.</p>
+    </div>
+    <div class="card blue">
+      <h4>🔁 Auto Reorder</h4>
+      <p>Automatically restock items when they reach the threshold limit.</p>
+    </div>
+    <div class="card purple">
+      <h4>📊 Analytics</h4>
+      <p>View detailed monthly reports and insights for better planning.</p>
+    </div>
+    <div class="card yellow">
+      <h4>💡 Recommendations</h4>
+      <p>Get data-driven suggestions for top-selling and trending products.</p>
+    </div>
+  </div>
+</section>
+
+<!-- About Section -->
+<section id="about" class="about">
+  <h3>About NXT GEN</h3>
+  <p>
+    NXT GEN Inventory is an advanced management system designed to automate stock monitoring,
+    minimize wastage, and simplify decision-making through AI-powered analytics.
+    Our goal is to empower businesses with smart technology that saves time, reduces loss,
+    and maximizes productivity.
+  </p>
+</section>
+
+<!-- Contact Section -->
+<section id="contact" class="contact">
+  <h3>Contact Us</h3>
+  <div class="contact-box">
+    <p><b>Email:</b> ngim@gmail.com</p>
+    <p><b>Phone:</b> 3121030103</p>
+    <p><b>Address:</b> Bengaluru, India</p>
+  </div>
+</section>

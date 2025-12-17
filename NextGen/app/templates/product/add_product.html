@@ -1,0 +1,255 @@
+{% extends "dashboard.html" %}
+{% block content %}
+<h1>Add New Product</h1>
+
+<!-- Main form (we will submit with JS) -->
+<form id="addProductForm" method="post" onsubmit="event.preventDefault(); addProduct();">
+  <!-- SUCCESS POPUP -->
+  <div id="successMessage" class="success-popup">✅ Product added successfully!</div>
+
+  <!-- BACK -->
+  <button type="button" class="back-btn" onclick="window.history.back()">⬅️ Back</button>
+
+  <!-- NEW: PRODUCT ID INPUT -->
+  <input type="number" name="product_id" id="product_id" placeholder="Product ID (optional)">
+
+  <!-- Fields -->
+  <input type="text" name="product_name" id="product_name" placeholder="Product Name" required>
+  <input type="text" name="category" id="category" placeholder="Category" required>
+
+  <!-- CUSTOM SEARCHABLE SUPPLIER DROPDOWN -->
+  <div class="custom-select-container" id="supplierCustomSelect">
+    <label class="select-label">Select Supplier</label>
+    <div class="select-display" id="selectDisplay" tabindex="0" role="button" aria-haspopup="listbox">
+      <span id="selectedSupplierText">Select Supplier</span>
+      <svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="#cbd5e1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+
+    <div class="select-dropdown" id="selectDropdown" role="listbox" aria-label="Supplier list" aria-hidden="true">
+      <input type="text" id="supplierSearch" class="select-search" placeholder="Search suppliers..." autocomplete="off">
+
+      <ul id="supplierList" class="supplier-list" role="presentation">
+        {% for s in suppliers %}
+          <li class="supplier-item" data-id="{{ s.id }}" role="option">{{ s.name }}</li>
+        {% endfor %}
+      </ul>
+
+      <div class="select-footer">
+        <button type="button" id="openAddSupplierBtn" class="add-supplier-btn">➕ Add New Supplier</button>
+      </div>
+    </div>
+
+    <input type="hidden" name="supplier_id" id="supplier_id_input" required>
+  </div>
+
+  <input type="number" name="stock" id="stock" placeholder="Stock Available" required>
+  <input type="number" step="0.01" name="cost_price" id="cost_price" placeholder="Cost Price (₹)" required>
+  <input type="number" step="0.01" name="selling_price" id="selling_price" placeholder="Selling Price (₹)" required>
+  <input type="date" name="expiry_date" id="expiry_date" required>
+
+  <button type="submit" class="submit-btn">Add Product</button>
+</form>
+
+<!-- SUPPLIER MODAL -->
+<div id="supplierModal" class="modal" aria-hidden="true">
+  <div class="modal-content">
+    <button class="modal-close" onclick="closeSupplierModal()" aria-label="Close supplier modal">✖</button>
+    <h2>Add New Supplier</h2>
+
+    <!-- NEW: SUPPLIER ID FIELD -->
+    <input type="number" id="sup_id" placeholder="Supplier ID (optional)">
+
+    <input type="text" id="sup_name" placeholder="Supplier Name" required>
+    <input type="text" id="sup_contact" placeholder="Contact" required>
+    <textarea id="sup_address" placeholder="Address" required></textarea>
+    <input type="number" id="sup_lead" placeholder="Lead Time (Days)" required>
+
+    <div style="display:flex; gap:10px; justify-content:center;">
+      <button class="submit-btn" onclick="addSupplier()">Add Supplier</button>
+      <button class="close-small" onclick="closeSupplierModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<style>
+  /* (your same existing CSS — unchanged) */
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    max-width: 520px;
+    background: rgba(255,255,255,0.04);
+    padding: 30px;
+    border-radius: 14px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.6);
+    backdrop-filter: blur(8px);
+  }
+  input, textarea, .select-display, .select-search, button {
+    font-family: "Poppins", sans-serif;
+    font-size: 14px;
+  }
+  input, textarea {
+    padding: 12px 14px;
+    border-radius: 10px;
+    border: none;
+    background: rgba(255,255,255,0.06);
+    color: #e6eef8;
+  }
+  input::placeholder, textarea::placeholder { color: #9fb0d6; }
+  textarea { height: 78px; resize: none; }
+
+  .back-btn {
+    align-self: flex-start;
+    padding: 8px 12px;
+    border-radius: 10px;
+    background: linear-gradient(90deg,#0ea5e9,#2563eb);
+    color: white; font-weight:600; border:none;
+  }
+
+  .submit-btn {
+    padding: 12px 16px;
+    border-radius: 10px;
+    background: linear-gradient(90deg,#9333ea,#ec4899);
+    color: white; font-weight:700; border:none; cursor:pointer;
+  }
+
+  .custom-select-container { position: relative; }
+  .select-label { display:block; margin-bottom:6px; color:#cfe3ff; font-weight:600; }
+  .select-display {
+    display:flex; align-items:center; justify-content:space-between;
+    gap:10px;
+    padding:12px 14px;
+    border-radius:10px;
+    background: rgba(255,255,255,0.06);
+    color: #e6eef8;
+    cursor: pointer;
+    user-select: none;
+    outline: none;
+  }
+  .select-display:focus { box-shadow: 0 6px 18px rgba(147,51,234,0.16); }
+  .select-display .chev { opacity:0.9; }
+
+  .select-dropdown {
+    position:absolute;
+    left:0; right:0; top: calc(100% + 8px);
+    background: linear-gradient(180deg, rgba(17,16,33,0.96), rgba(24,22,46,0.98));
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+    padding:10px;
+    z-index: 9999;
+    display:none;
+  }
+
+  .select-search {
+    width:100%;
+    padding:10px;
+    border-radius:8px;
+    border:none;
+    background: rgba(255,255,255,0.04);
+    color: #e6eef8;
+    margin-bottom:8px;
+  }
+
+  .supplier-list {
+    list-style:none; padding:0; margin:0;
+    max-height:220px; overflow:auto;
+  }
+  .supplier-item {
+    padding:10px 12px; border-radius:8px;
+    color:#dbeafe; cursor:pointer; margin-bottom:6px;
+  }
+  .supplier-item:hover { background: rgba(147,51,234,0.14); color: #fff; }
+  .supplier-item.selected {
+    background: linear-gradient(90deg,#9333ea,#ec4899);
+    color: #fff; font-weight:700;
+  }
+
+  .select-footer { margin-top:8px; display:flex; justify-content:center; }
+  .add-supplier-btn {
+    background: rgba(255,255,255,0.06);
+    border:none; color:#ec4899; padding:8px 12px; border-radius:8px;
+    cursor:pointer; font-weight:700;
+  }
+
+  .success-popup {
+    display:none; position: fixed; top: 18px; right: 18px; z-index:99999;
+    padding:10px 14px; border-radius:10px; background: linear-gradient(90deg,#22c55e,#16a34a);
+    color:white; font-weight:600; box-shadow:0 8px 24px rgba(0,0,0,0.5);
+  }
+
+  .modal { display:none; position:fixed; inset:0; background: rgba(0,0,0,0.65); z-index:100000; justify-content:center; align-items:center; }
+  .modal-content {
+    width:420px; max-width:92%;
+    background: linear-gradient(180deg, rgba(14,12,34,0.98), rgba(28,24,58,0.98));
+    padding:20px; border-radius:12px;
+    display:flex; flex-direction:column; gap:10px;
+  }
+</style>
+
+<script>
+  /* Entire JS remains same except we append product_id & supplier_id */
+
+  async function addSupplier() {
+    const name = document.getElementById('sup_name').value.trim();
+    const contact = document.getElementById('sup_contact').value.trim();
+    const address = document.getElementById('sup_address').value.trim();
+    const lead = document.getElementById('sup_lead').value;
+    const manual_id = document.getElementById('sup_id').value;
+
+    const payload = { name, contact, address, lead_time: lead };
+    if (manual_id) payload["supplier_id"] = manual_id;
+
+    const res = await fetch("/dashboard/products/add_supplier", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+
+    const data = await res.json();
+    if (!res.ok) {
+      alert("Error: " + data.error);
+      return;
+    }
+
+    const list = document.getElementById('supplierList');
+    const li = document.createElement('li');
+    li.className = 'supplier-item';
+    li.dataset.id = data.id;
+    li.textContent = name;
+    list.appendChild(li);
+
+    document.getElementById('selectedSupplierText').textContent = name;
+    document.getElementById('supplier_id_input').value = data.id;
+
+    closeSupplierModal();
+    alert("Supplier added!");
+  }
+
+  async function addProduct() {
+    const fd = new FormData();
+    fd.append('product_id', document.getElementById('product_id').value);
+    fd.append('product_name', document.getElementById('product_name').value.trim());
+    fd.append('category', document.getElementById('category').value.trim());
+    fd.append('supplier_id', document.getElementById('supplier_id_input').value);
+    fd.append('stock', document.getElementById('stock').value);
+    fd.append('cost_price', document.getElementById('cost_price').value);
+    fd.append('selling_price', document.getElementById('selling_price').value);
+    fd.append('expiry_date', document.getElementById('expiry_date').value);
+
+    const res = await fetch("/dashboard/products/add", {
+
+      method: "POST",
+      body: fd
+    });
+
+    const data = await res.json();
+    if (!res.ok) {
+      alert("Error: " + data.error);
+      return;
+    }
+
+    document.getElementById("successMessage").style.display = "block";
+    setTimeout(() => window.location.href = "/dashboard/products/view", 900);
+  }
+</script>
+{% endblock %}

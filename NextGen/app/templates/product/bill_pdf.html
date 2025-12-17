@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+
+<style>
+    body {
+        font-family: 'Poppins', sans-serif;
+        padding: 30px;
+        color: #222;
+        font-size: 15px;
+        -webkit-font-smoothing: antialiased;
+        font-feature-settings: "liga" 0; /* Fixes ■ characters */
+    }
+
+    .header {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .header h2 {
+        margin: 0;
+        font-size: 28px;
+        font-weight: 700;
+    }
+
+    .header small {
+        display: block;
+        font-size: 14px;
+        opacity: 0.75;
+        margin-top: 2px;
+    }
+
+    hr {
+        border: none;
+        border-bottom: 1px solid #ccc;
+        margin: 18px 0;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 25px;
+    }
+
+    th, td {
+        padding: 10px 8px;
+        border-bottom: 1px solid #ddd;
+        font-size: 15px;
+    }
+
+    th {
+        background: #f4f4f4;
+        font-weight: 600;
+        text-align: left;
+    }
+
+    .summary {
+        margin-top: 25px;
+        text-align: right;
+    }
+
+    .summary p {
+        margin: 5px 0;
+        font-size: 16px;
+    }
+
+    .grand-total {
+        font-size: 19px;
+        font-weight: 700;
+    }
+
+    .thankyou {
+        text-align: center;
+        margin-top: 25px;
+        opacity: 0.7;
+    }
+</style>
+</head>
+
+<body>
+
+<div class="header">
+    <h2>NXT GEN Inventory</h2>
+    <small>Bengaluru – 560003</small>
+    <small>Phone: +91 3121030103</small>
+    <small>GSTIN: 29CYCM2314CT17</small>
+</div>
+
+<hr>
+
+<p><b>Bill No:</b> {{ bill_no }}</p>
+<p><b>Date:</b> {{ items[0].sale_date if items else "" }}</p>
+<p><b>Biller ID:</b> {{ items[0].biller_id if items else "" }}</p>
+
+<hr>
+
+<table>
+    <thead>
+        <tr>
+            <th>Product</th>
+            <th>Qty</th>
+            <th>Price (₹)</th>
+            <th>Total (₹)</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for it in items %}
+        <tr>
+            <td>{{ it.product_name }}</td>
+            <td>{{ it.qty_sold }}</td>
+            <td>{{ "%.2f"|format((it.total_amount / it.qty_sold)|float) }}</td>
+            <td>{{ "%.2f"|format(it.total_amount|float) }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% set gst = total * 0.18 %}
+{% set grand_total = total + gst %}
+
+<div class="summary">
+    <p><b>Subtotal:</b> ₹{{ "%.2f"|format(total) }}</p>
+    <p><b>GST (18%):</b> ₹{{ "%.2f"|format(gst) }}</p>
+    <p class="grand-total">Grand Total: ₹{{ "%.2f"|format(grand_total) }}</p>
+</div>
+
+<hr>
+
+<p class="thankyou">Thank you for shopping with NXT GEN Inventory!</p>
+
+</body>
+</html>

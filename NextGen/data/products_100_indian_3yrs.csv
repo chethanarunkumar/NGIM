@@ -1,0 +1,101 @@
+product_id,product_name,category,base_price
+1,Basmati Rice 5kg,Staples,362.1
+2,Sona Masoori Rice 10kg,Staples,857.61
+3,Wheat Flour Atta 5kg,Staples,669.51
+4,Toor Dal 1kg,Staples,554.85
+5,Moong Dal 1kg,Staples,174.18
+6,Chana Dal 1kg,Staples,174.16
+7,Sugar 5kg,Staples,89.95
+8,Salt Iodized 1kg,Staples,784.91
+9,Groundnut Oil 1L,Staples,556.96
+10,Sunflower Oil 1L,Staples,648.94
+11,Toned Milk 1L,Dairy,31.94
+12,Curd 500g,Dairy,582.55
+13,Paneer 200g,Dairy,502.82
+14,Ghee 1L,Dairy,143.16
+15,Butter 100g,Dairy,125.46
+16,Cheese Slices 10pcs,Dairy,126.37
+17,Masala Chips 90g,Snacks,67.81
+18,Banana Chips 200g,Snacks,109.7
+19,Mixture Namkeen 500g,Snacks,92.07
+20,Salted Peanuts 200g,Snacks,65.33
+21,Bhujia Namkeen 200g,Snacks,126.25
+22,Nachos 150g,Snacks,36.5
+23,Cola Soft Drink 1.25L,Beverages,50.9
+24,Orange Soft Drink 1.25L,Beverages,61.29
+25,Lemon Soda 600ml,Beverages,73.85
+26,Mango Juice 1L,Beverages,119.92
+27,Nimbu Pani Drink 250ml,Beverages,37.95
+28,Packaged Water 1L,Beverages,81.99
+29,Marie Biscuits 200g,Biscuits & Bakery,75.17
+30,Glucose Biscuits 150g,Biscuits & Bakery,15.11
+31,Cream Biscuits 120g,Biscuits & Bakery,76.83
+32,Rusk 300g,Biscuits & Bakery,28.76
+33,Bread White 400g,Biscuits & Bakery,17.16
+34,Bread Brown 400g,Biscuits & Bakery,114.38
+35,Bath Soap 100g,Personal Care,386.94
+36,Shampoo Sachet Pack,Personal Care,327.19
+37,Shampoo Bottle 650ml,Personal Care,135.75
+38,Toothpaste 200g,Personal Care,57.12
+39,Toothbrush Medium,Personal Care,280.01
+40,Face Wash 100ml,Personal Care,187.26
+41,Detergent Powder 1kg,Home Care,60.27
+42,Detergent Bar 250g,Home Care,183.41
+43,Dishwash Liquid 500ml,Home Care,31.35
+44,Floor Cleaner 1L,Home Care,320.08
+45,Toilet Cleaner 1L,Home Care,105.4
+46,Phenyl 1L,Home Care,238.63
+47,Red Chilli Powder 200g,Spices & Masala,98.58
+48,Turmeric Powder 200g,Spices & Masala,144.41
+49,Coriander Powder 200g,Spices & Masala,150.28
+50,Garam Masala 100g,Spices & Masala,70.67
+51,Sambar Powder 200g,Spices & Masala,243.31
+52,Rasam Powder 200g,Spices & Masala,200.53
+53,Instant Noodles Masala 70g,Instant & Frozen,283.06
+54,Instant Noodles Family Pack,Instant & Frozen,270.55
+55,Frozen Paratha 400g,Instant & Frozen,187.41
+56,Frozen Peas 500g,Instant & Frozen,278.12
+57,Ready-to-Eat Paneer Curry,Instant & Frozen,44.78
+58,Ready-to-Eat Dal Makhani,Instant & Frozen,74.88
+59,Agarbatti Sticks,Puja Items,18.59
+60,Camphor Tablets,Puja Items,71.81
+61,Ghee Diya Pack,Puja Items,83.85
+62,Kumkum Powder,Puja Items,61.56
+63,Haldi Powder Puja,Puja Items,167.46
+64,Cotton Wicks Pack,Puja Items,77.78
+65,Vanilla Ice Cream Tub 500ml,Frozen & Ice Cream,205.5
+66,Chocolate Ice Cream Tub 500ml,Frozen & Ice Cream,215.25
+67,Strawberry Ice Cream Tub 500ml,Frozen & Ice Cream,210.75
+68,Mango Ice Cream Tub 500ml,Frozen & Ice Cream,220.5
+69,Butterscotch Ice Cream Tub 500ml,Frozen & Ice Cream,225.75
+70,Pista Ice Cream Tub 500ml,Frozen & Ice Cream,230.25
+71,Ice Cream Cone Vanilla,Frozen & Ice Cream,45.9
+72,Ice Cream Cone Chocolate,Frozen & Ice Cream,48.75
+73,Kulfi Malai,Frozen & Ice Cream,40.75
+74,Cassata Ice Cream 500ml,Frozen & Ice Cream,240.4
+75,Family Pack Ice Cream 1L,Frozen & Ice Cream,310.75
+76,Ready-to-Eat Chana Masala,Instant & Frozen,110.75
+77,Ready-to-Eat Rajma,Instant & Frozen,105.9
+78,Frozen Corn 500g,Instant & Frozen,145.25
+79,Frozen Mixed Vegetables 500g,Instant & Frozen,125.25
+80,Frozen French Fries 500g,Instant & Frozen,135.4
+81,Cashew Nuts 200g,Dry Fruits & Nuts,385.9
+82,Almonds 200g,Dry Fruits & Nuts,420.75
+83,Raisins 250g,Dry Fruits & Nuts,110.3
+84,Walnuts 150g,Dry Fruits & Nuts,325.4
+85,Cinnamon Sticks 50g,Spices & Masala,85.4
+86,Cardamom Green 100g,Spices & Masala,210.75
+87,Cloves 50g,Spices & Masala,125.9
+88,Black Pepper 100g,Spices & Masala,175.25
+89,Jeera Cumin 200g,Spices & Masala,135.6
+90,Mustard Seeds 200g,Spices & Masala,85.75
+91,Honey 500g,Beverages,185.4
+92,Green Tea 100g,Beverages,135.25
+93,Black Tea 500g,Beverages,220.75
+94,Coffee Powder 200g,Beverages,185.9
+95,Energy Drink 250ml,Beverages,55.4
+96,Jam Mixed Fruit 400g,Biscuits & Bakery,125.6
+97,Chocolate Spread 400g,Biscuits & Bakery,145.75
+98,Mayonnaise 200g,Biscuits & Bakery,95.25
+99,Baby Diapers Pack,Baby Care,420.9
+100,Baby Wipes Pack,Baby Care,135.25
