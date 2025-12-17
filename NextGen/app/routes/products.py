@@ -1,8 +1,8 @@
-from flask import Blueprint, render_template, current_app, jsonify, request, flash, redirect, url_for
+from flask import Blueprint, render_template, jsonify, request, flash, redirect, url_for
 import psycopg2.extras
 from datetime import datetime
 from app.routes.main import log_activity
-
+from app.db import get_db
 products = Blueprint("products", __name__, url_prefix="/dashboard/products")
 
 # ---------------------------------------------------
@@ -11,7 +11,8 @@ products = Blueprint("products", __name__, url_prefix="/dashboard/products")
 @products.route("/")
 def dashboard():
     try:
-        conn = current_app.db
+        conn = get_db()
+
         cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 
         # Total products
@@ -93,7 +94,8 @@ def dashboard():
 # ---------------------------------------------------
 @products.route("/get/<int:pid>")
 def get_product(pid):
-    conn = current_app.db
+    conn = get_db()
+
     cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 
     cur.execute("""
@@ -123,7 +125,8 @@ def increase_stock():
     qty = int(data["qty"])
     expiry = data.get("expiry_date")
 
-    conn = current_app.db
+    conn = get_db()
+
     cur = conn.cursor()
 
     if expiry:
@@ -163,7 +166,8 @@ def add_category():
 
 @products.route("/categories")
 def get_categories():
-    conn = current_app.db
+    conn = get_db()
+
     cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 
     cur.execute("""
@@ -183,7 +187,8 @@ def get_categories():
 # ---------------------------------------------------
 @products.route("/view")
 def view_products():
-    conn = current_app.db
+    conn = get_db()
+
     cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 
     search = request.args.get("search", "").lower()
@@ -230,7 +235,8 @@ def add_product():
     expiry = request.form.get("expiry_date") or None
     supplier_id = request.form.get("supplier_id") or None
 
-    conn = current_app.db
+    conn = get_db()
+
     cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 
     cur.execute("""
@@ -255,7 +261,8 @@ def add_product():
 # ---------------------------------------------------
 @products.route("/remove/<int:product_id>")
 def remove_product(product_id):
-    conn = current_app.db
+    conn = get_db()
+
     cur = conn.cursor()
     cur.execute("DELETE FROM products WHERE id=%s;", (product_id,))
     conn.commit()
@@ -283,7 +290,8 @@ def add_supplier():
         return jsonify({"error": "Supplier name required"}), 400
 
     try:
-        conn = current_app.db
+        conn = get_db()
+
         cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 
         if manual_id:
@@ -321,7 +329,8 @@ def add_supplier():
 @products.route("/billing")
 def billing_page():
     try:
-        conn = current_app.db
+        conn = get_db()
+
         cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 
         cur.execute("SELECT id, name, selling_price, stock_qty FROM products ORDER BY name;")
@@ -336,7 +345,8 @@ def billing_page():
 @products.route("/billing/search")
 def billing_search():
     q = request.args.get("q", "").strip()
-    conn = current_app.db
+    conn = get_db()
+
     cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 
     try:
@@ -376,7 +386,8 @@ def billing_checkout():
     if not items:
         return jsonify({"error": "no items"}), 400
 
-    conn = current_app.db
+    conn = get_db()
+
     cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 
     try:
@@ -479,7 +490,8 @@ def billing_checkout():
 @products.route("/billing/history")
 def billing_history():
     try:
-        conn = current_app.db
+        conn = get_db()
+
         cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
         cur.execute("""
             SELECT
@@ -505,7 +517,8 @@ def billing_history():
 @products.route("/billing/print/<string:bill_no>")
 def billing_print(bill_no):
     try:
-        conn = current_app.db
+        conn = get_db()
+
         cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 
         cur.execute("""
@@ -550,7 +563,8 @@ def billing_pdf(bill_no):
         import io
         import psycopg2.extras
 
-        conn = current_app.db
+        conn = get_db()
+
         cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 
         cur.execute("""

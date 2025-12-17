@@ -1,7 +1,7 @@
-from flask import Blueprint, render_template, request, jsonify, current_app, abort
+from flask import Blueprint, render_template, request, jsonify,  abort
 import psycopg2.extras
 from datetime import datetime
-
+from app.db import get_db
 auto_order_bp = Blueprint("auto_order_bp", __name__, url_prefix="/dashboard/reorder")
 
 
@@ -9,7 +9,8 @@ auto_order_bp = Blueprint("auto_order_bp", __name__, url_prefix="/dashboard/reor
 # 📌 Ensure every product has a rule
 # =======================================================
 def ensure_rules_exist():
-    conn = current_app.db
+    conn = get_db()
+
     cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 
     cur.execute("""
@@ -33,7 +34,8 @@ def ensure_rules_exist():
 # ⭐ AUTO-ORDER ENGINE — Only when stock < threshold
 # =======================================================
 def run_auto_order_engine():
-    conn = current_app.db
+    conn = get_db()
+
     cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 
     # Load global settings
@@ -100,7 +102,8 @@ def run_auto_order_engine():
 # =======================================================
 @auto_order_bp.route("/", methods=["GET"])
 def auto_order_page():
-    conn = current_app.db
+    conn = get_db()
+
     cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 
     ensure_rules_exist()
@@ -188,7 +191,8 @@ def auto_order_page():
 @auto_order_bp.route("/toggle_global", methods=["POST"])
 def toggle_global():
     data = request.get_json()
-    conn = current_app.db
+    conn = get_db()
+
     cur = conn.cursor()
 
     cur.execute("""
@@ -208,7 +212,8 @@ def toggle_global():
 # =======================================================
 @auto_order_bp.route("/toggle_rule/<int:rule_id>", methods=["POST"])
 def toggle_rule(rule_id):
-    conn = current_app.db
+    conn = get_db()
+
     cur = conn.cursor()
 
     cur.execute("""
@@ -227,7 +232,7 @@ def toggle_rule(rule_id):
 @auto_order_bp.route("/update_rule", methods=["POST"])
 def update_rule():
     data = request.get_json()
-    conn = current_app.db
+    conn = get_db()
     cur = conn.cursor()
 
     cur.execute("""
@@ -245,7 +250,8 @@ def update_rule():
 # =======================================================
 @auto_order_bp.route("/report/<int:order_id>", methods=["GET"])
 def order_report(order_id):
-    conn = current_app.db
+    conn = get_db()
+
     cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 
     cur.execute("""

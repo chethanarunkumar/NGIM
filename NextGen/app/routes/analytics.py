@@ -1,11 +1,12 @@
-from flask import Blueprint, render_template, current_app
+from flask import Blueprint, render_template
 import psycopg2.extras
-
+from app.db import get_db
 analytics_bp = Blueprint("analytics_bp", __name__, url_prefix="/analytics")
 
 @analytics_bp.route("/")
 def analytics_dashboard():
-    conn = current_app.db
+    conn = get_db()
+
     # use RealDictCursor for convenience
     cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 

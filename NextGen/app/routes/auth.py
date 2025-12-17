@@ -1,6 +1,7 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash, session, current_app
+from flask import Blueprint, render_template, request, redirect, url_for, flash, session
 from werkzeug.security import generate_password_hash, check_password_hash
 import psycopg2.extras
+from app.db import get_db
 
 auth = Blueprint('auth', __name__)
 
@@ -11,7 +12,7 @@ def login():
         email = request.form.get('email')
         password_entered = request.form.get('password')
 
-        conn = current_app.db
+        conn = get_db()
         cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
         cur.execute("SELECT * FROM users WHERE email = %s", (email,))
@@ -39,7 +40,7 @@ def register():
 
         hashed = generate_password_hash(raw_password)
 
-        conn = current_app.db
+        conn = get_db()
         cur = conn.cursor()
         cur.execute(
             "INSERT INTO users (email, password, role) VALUES (%s, %s, %s)",

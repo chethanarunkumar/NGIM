@@ -3,7 +3,9 @@
 # Connects Flask UI to ai_engine.py backend
 # ================================================================
 
-from flask import Blueprint, render_template, request, current_app
+from flask import Blueprint, render_template, request
+from flask import Blueprint, render_template, request, redirect, url_for, flash, session
+from app.db import get_db
 
 from app.ai_engine import (
     get_products,
@@ -52,7 +54,7 @@ def recommendations_home():
             top10 = get_top10_forecast(forecast_month)
 
         except Exception as e:
-            current_app.logger.error(f"[AI ERROR] {e}")
+            get_db.logger.error(f"[AI ERROR] {e}")
             return render_template(
                 "recommendation/recommendation_dashboard.html",
                 products=products,
@@ -60,7 +62,7 @@ def recommendations_home():
                 top10=None
             )
 
-        current_app.logger.info(
+        get_db.logger.info(
             f"[AI] Recommendation generated for PID={pid} Month={forecast_month}"
         )
 

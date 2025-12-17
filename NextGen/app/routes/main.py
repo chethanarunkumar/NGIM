@@ -1,6 +1,6 @@
-from flask import Blueprint, render_template, request, redirect, url_for, jsonify, flash, session, current_app
+from flask import Blueprint, render_template, request, redirect, url_for, jsonify, flash, session
 from datetime import datetime
-
+from app.db import get_db
 import psycopg2.extras
 
 main = Blueprint('main', __name__)
@@ -56,7 +56,8 @@ def dashboard():
         return redirect(url_for('auth.login'))  # 🔥 FIXED HERE
 
     try:
-        conn = current_app.db
+        conn = get_db()
+
         cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
         # Total products
@@ -149,7 +150,8 @@ def dashboard():
 
     except Exception as e:
         try:
-            conn = current_app.db
+            conn = get_db()
+
             conn.rollback()   # 🔥 FIX: reset bad transaction
         except:
             pass

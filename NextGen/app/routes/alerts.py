@@ -1,7 +1,7 @@
-from flask import Blueprint, render_template, current_app, jsonify
+from flask import Blueprint, render_template, jsonify
 import psycopg2.extras
 from datetime import datetime
-
+from app.db import get_db
 alerts_bp = Blueprint("alerts_bp", __name__, url_prefix="/alerts")
 
 
@@ -9,7 +9,7 @@ alerts_bp = Blueprint("alerts_bp", __name__, url_prefix="/alerts")
 # AUTO-GENERATE EXPIRY ALERTS (Next 30 Days ONLY)
 # --------------------------------------------------------
 def generate_auto_alerts():
-    conn = current_app.db
+    conn = get_db()
     cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 
     # 1️⃣ Remove old expiry alerts
@@ -47,7 +47,8 @@ def alerts_home():
 
     generate_auto_alerts()  # Auto-generate alerts
 
-    conn = current_app.db
+    conn = get_db()
+
     cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 
     cur.execute("""
@@ -87,7 +88,8 @@ def alerts_home():
 # --------------------------------------------------------
 @alerts_bp.route("/resolve/<int:id>", methods=["POST"])
 def resolve_alert(id):
-    conn = current_app.db
+    conn = get_db()
+
     cur = conn.cursor()
 
     cur.execute("""

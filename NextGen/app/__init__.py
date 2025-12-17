@@ -1,49 +1,9 @@
 from flask import Flask
-import psycopg2
-import psycopg2.extras
-import os
-from app.config import Config
-
 
 def create_app():
     app = Flask(__name__)
     app.config.from_object("app.config.Config")
 
-    # ---------------------------------------
-    # 📌 ALWAYS initialize db attribute
-    # ---------------------------------------
-    app.db = None
-
-    # ---------------------------------------
-    # 📌 Connect to PostgreSQL (LOCAL + RENDER)
-    # ---------------------------------------
-    try:
-        DATABASE_URL = os.environ.get("DATABASE_URL")
-
-        if DATABASE_URL:
-            conn = psycopg2.connect(
-                DATABASE_URL,
-                cursor_factory=psycopg2.extras.RealDictCursor,
-                sslmode="require"
-            )
-        else:
-            conn = psycopg2.connect(
-                dbname=Config.DB_NAME,
-                user=Config.DB_USER,
-                password=Config.DB_PASSWORD,
-                host=Config.DB_HOST,
-                port=Config.DB_PORT,
-                cursor_factory=psycopg2.extras.RealDictCursor
-            )
-
-        app.db = conn
-        print("✅ PostgreSQL Database Connected Successfully!")
-    except Exception as e:
-        print(f"❌ Database Connection Error: {e}")
-
-    # ---------------------------------------
-    # 📌 Register Blueprints
-    # ---------------------------------------
     from app.routes.main import main
     from app.routes.products import products
     from app.routes.auto_order import auto_order_bp
