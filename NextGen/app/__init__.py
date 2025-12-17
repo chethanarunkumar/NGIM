@@ -9,6 +9,11 @@ def create_app():
     app.config.from_object("app.config.Config")
 
     # ---------------------------------------
+    # 📌 ALWAYS initialize db attribute
+    # ---------------------------------------
+    app.db = None   # 🔑 REQUIRED LINE
+
+    # ---------------------------------------
     # 📌 Connect to PostgreSQL
     # ---------------------------------------
     try:
@@ -42,6 +47,6 @@ def create_app():
     app.register_blueprint(products)
     app.register_blueprint(alerts_bp)
     app.register_blueprint(auto_order_bp)
-    app.register_blueprint(analytics_bp)  
+    app.register_blueprint(analytics_bp)
 
     return app
