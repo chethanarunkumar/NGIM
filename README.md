@@ -79,7 +79,7 @@ NGIM/
 
 ## 🎓 Academic Context
 
-This project is developed as part of a **final-year engineering project**, focusing on:
+This project is developed as part of a **Engineering project**, focusing on:
 - Real-world inventory management challenges  
 - AI-driven business intelligence  
 - Cloud-based scalable deployment  
