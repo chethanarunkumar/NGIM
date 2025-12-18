@@ -33,7 +33,6 @@ The system integrates intelligent models to assist business owners:
 ### Backend
 - Python (Flask)
 - PostgreSQL
-- SQLAlchemy / Psycopg2
 
 ### Frontend
 - HTML
@@ -89,9 +88,8 @@ This project is developed as part of a **Engineering project**, focusing on:
 ## 👨‍💻 Author
 
 **Chethan**  
-Information Science & Engineering  
-Aspiring Data Scientist & Full-Stack Developer  
-
+Email:chethanharsha841@gmail.com
+ 
 ---
 
 ## 📌 Note
