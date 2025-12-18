@@ -7,3 +7,4 @@ numpy
 xgboost
 mlxtend
 scikit-learn
+reportlab
