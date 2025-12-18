@@ -168,8 +168,7 @@ def recommendations():
 def logout():
     session.pop('user', None)
     flash("Logged out successfully!", "info")
-    return redirect(url_for('auth.login'))
-
+    return redirect(url_for('main.index'))
 
 @main.route('/order-report/<int:order_id>')
 def order_report(order_id):
