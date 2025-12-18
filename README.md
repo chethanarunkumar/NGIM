@@ -9,6 +9,7 @@ NGIM (Next-Gen Inventory Management System) is a cloud-based, AI-powered invento
 - 📊 Inventory & Stock Management  
 - 🧾 Billing & Sales Tracking  
 - ⏰ Expiry Alerts (Next 30 Days)  
+- 🔁 Auto Reorder System (low-stock based restocking support)  
 - 📈 Monthly Revenue Analytics  
 - 🧠 AI-based Product Forecasting  
 - 🔗 Product Bundle Recommendations (Owner-focused)  
@@ -48,15 +49,19 @@ The system integrates intelligent models to assist business owners:
 
 ## ☁️ Deployment
 
-- **Backend:** Render  
-- **Frontend:** Vercel  
+- **Application Server:** Render  
+- **Backend Framework:** Flask  
 - **Database:** PostgreSQL (Render)  
 
-All sensitive configurations (database URL, secrets) are managed using **environment variables**.
+The frontend is rendered using Flask templates (HTML, CSS, JavaScript) and served directly from the backend.
+
+All sensitive configurations (database URL, secrets) are managed using environment variables.
+
 
 ---
 
 ## 📂 Project Structure (Simplified)
+
 NGIM/
 │── NextGen/
 │ ├── app/
@@ -69,15 +74,14 @@ NGIM/
 │── requirements.txt
 │── README.md
 
-
 ---
 
 ## 🎓 Academic Context
 
 This project is developed as part of a **final-year engineering project**, focusing on:
-- Real-world inventory management challenges
-- AI-driven business intelligence
-- Cloud-based scalable deployment
+- Real-world inventory management challenges  
+- AI-driven business intelligence  
+- Cloud-based scalable deployment  
 
 ---
 
@@ -85,7 +89,7 @@ This project is developed as part of a **final-year engineering project**, focus
 
 **Chethan**  
 Information Science & Engineering  
-Aspiring Data Scientist & Full-Stack Developer
+Aspiring Data Scientist & Full-Stack Developer  
 
 ---
 
