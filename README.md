@@ -60,20 +60,21 @@ All sensitive configurations (database URL, secrets) are managed using environme
 
 ---
 
-## 📂 Project Structure (Simplified)
+## 📁 Project Structure
 
+```text
 NGIM/
-│── NextGen/
-│ ├── app/
-│ │ ├── routes/
-│ │ ├── templates/
-│ │ ├── static/
-│ │ └── ai_engine.py
-│ ├── data/
-│ └── run.py
-│── requirements.txt
-│── README.md
-
+├── NextGen/
+│   ├── app/
+│   │   ├── routes/
+│   │   ├── templates/
+│   │   ├── static/
+│   │   └── ai_engine.py
+│   ├── data/
+│   └── run.py
+├── requirements.txt
+└── README.md
+```
 ---
 
 ## 🎓 Academic Context
