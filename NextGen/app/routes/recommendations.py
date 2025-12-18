@@ -3,10 +3,17 @@
 # Connects Flask UI to ai_engine.py backend
 # ================================================================
 
-from flask import Blueprint, render_template, request
-from flask import Blueprint, render_template, request, redirect, url_for, flash, session
-from app.db import get_db
-from flask import current_app
+from flask import (
+    Blueprint,
+    render_template,
+    request,
+    redirect,
+    url_for,
+    flash,
+    session,
+    current_app
+)
+
 
 
 from app.ai_engine import (
