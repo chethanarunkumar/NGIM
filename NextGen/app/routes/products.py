@@ -31,12 +31,15 @@ def dashboard():
         """, (global_min_stock,))
         low_stock = cur.fetchone()["count"]
 
-        # Expiring soon
+        # Expiring soon 
         cur.execute("""
-            SELECT COUNT(*) FROM products
-            WHERE expiry_date <= CURRENT_DATE + INTERVAL '7 days';
+            SELECT COUNT(*) AS count
+            FROM alerts
+            WHERE alert_type = 'Expiry'
+            AND status = 'Active';
         """)
         expiring_soon = cur.fetchone()["count"]
+
 
         # Total revenue
         cur.execute("SELECT SUM(total_amount) AS revenue FROM sales;")

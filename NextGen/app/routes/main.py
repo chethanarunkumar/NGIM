@@ -79,13 +79,15 @@ def dashboard():
 
         low_stock = cur.fetchone()['count']
 
-        # Expiring soon batches
+        # Expiring soon 
         cur.execute("""
-            SELECT COUNT(*) 
-            FROM products 
-            WHERE expiry_date <= NOW() + INTERVAL '7 days';
+            SELECT COUNT(*) AS count
+            FROM alerts
+            WHERE alert_type = 'Expiry'
+            AND status = 'Active';
         """)
-        expiring_soon = cur.fetchone()['count']
+        expiring_soon = cur.fetchone()["count"]
+
 
         # Monthly revenue (safe - set to 0 if null)
         total_revenue = 0
