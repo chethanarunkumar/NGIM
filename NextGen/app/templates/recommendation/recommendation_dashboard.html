@@ -295,24 +295,45 @@
 
 {% if result %}
 <script>
-const y = {{ result.forecast_list | tojson }};
-const x = y.map((_, i) => {
-  const d = new Date();
-  d.setDate(d.getDate() + i + 1);
-  return d.toISOString().slice(0,10);
-});
+  const rawMonth = "{{ result.forecast_month }}"; // YYYY-MM
+  const [year, month] = rawMonth.split("-").map(Number);
 
-Plotly.newPlot("forecastChart", [{
-    x:x, y:y,
-    type:"scatter",
-    mode:"lines+markers",
-    marker:{size:5}
-}], {
-    margin:{t:45, l:40, r:20, b:40},
-    paper_bgcolor:"rgba(0,0,0,0)",
-    plot_bgcolor:"rgba(0,0,0,0)"
-}, {displayModeBar:false});
+  // Generate all days in selected month
+  const daysInMonth = new Date(year, month, 0).getDate();
+  const x = [];
+  for (let d = 1; d <= daysInMonth; d++) {
+    x.push(new Date(year, month - 1, d));
+  }
+
+  const avgDaily = Math.round({{ result.forecast_total }} / daysInMonth);
+  const y = new Array(x.length).fill(avgDaily);
+
+  Plotly.newPlot("forecastChart", [{
+      x: x,
+      y: y,
+      type: "scatter",
+      mode: "lines+markers",
+      marker: { size: 5, color: "#5DA9E9" },
+      line: { width: 2, color: "#5DA9E9" },
+      hovertemplate: "%{x|%b %d, %Y}<br>%{y}<extra></extra>"
+  }], {
+      title: "Daily Distribution (Selected Month)",
+      xaxis: {
+        title: "Date",
+        tickformat: "%b %d",
+        showgrid: true
+      },
+      yaxis: {
+        title: "Units",
+        range: [avgDaily - 3, avgDaily + 3],   // ✅ THIS CENTERS THE LINE
+        fixedrange: true                       // optional: disable zoom
+      },
+      margin: { t: 45, l: 40, r: 20, b: 40 },
+      paper_bgcolor: "rgba(0,0,0,0)",
+      plot_bgcolor: "rgba(0,0,0,0)"
+  }, { displayModeBar: false });
 </script>
 {% endif %}
+
 
 {% endblock %}
