@@ -128,6 +128,7 @@ def auto_order_page():
     rules = cur.fetchall()
 
     # Load activity (auto-generated orders only)
+    # Load activity (ONLY ACTIVE auto-reorders)
     cur.execute("""
         SELECT
             o.id,
@@ -140,12 +141,19 @@ def auto_order_page():
             o.status,
             o.order_form_url
         FROM orders o
-        LEFT JOIN products p ON o.product_id = p.id
+        JOIN products p ON o.product_id = p.id
         LEFT JOIN suppliers s ON o.supplier_id = s.id
         WHERE o.generated_by = 1
+        AND o.status = 'Pending'
+        AND p.stock_qty <= (
+            SELECT min_stock_level
+            FROM auto_order_settings
+            LIMIT 1
+        )
         ORDER BY o.order_date DESC
         LIMIT 100;
     """)
+
     rows = cur.fetchall()
 
     activity = []

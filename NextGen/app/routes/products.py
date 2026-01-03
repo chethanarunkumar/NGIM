@@ -129,9 +129,9 @@ def increase_stock():
     expiry = data.get("expiry_date")
 
     conn = get_db()
-
     cur = conn.cursor()
 
+    # 1️⃣ Increase stock
     if expiry:
         cur.execute("""
             UPDATE products
@@ -145,6 +145,15 @@ def increase_stock():
             SET stock_qty = stock_qty + %s
             WHERE id = %s
         """, (qty, pid))
+
+    # 2️⃣ 🔑 ADD THIS PART (auto-hide from Auto-Reorder Activity)
+    cur.execute("""
+        UPDATE orders
+        SET status = 'Approved'
+        WHERE generated_by = 1
+          AND product_id = %s
+          AND status = 'Pending'
+    """, (pid,))
 
     conn.commit()
     cur.close()

@@ -58,12 +58,7 @@ All sensitive configurations (database URL, secrets) are managed using environme
 
 
 ---
-## 🌐 Live Demo
 
-The application is deployed on Render and accessible at:  
-👉 https://ngim.onrender.com
- 
- ---
 ## 📁 Project Structure
 
 ```text
