@@ -2,8 +2,8 @@ from app.whatsapp_api import send_whatsapp_message
 
 # Add your list of recipients (max 5 numbers in test mode)
 recipients = [
-    "+919606641407",   # your number
-    "+919491842714", # another number
+    "+91",   # your number
+    "+91", # another number
     
 ]
 
